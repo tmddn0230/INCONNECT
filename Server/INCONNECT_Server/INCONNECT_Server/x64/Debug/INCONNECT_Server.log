@@ -1,0 +1,3 @@
+﻿  INCONNECT_Server.cpp
+E:\GitDesk\INCONNECT\Server\INCONNECT_Server\INCONNECT_Server.cpp(42,17): warning C4267: 'initializing': conversion from 'size_t' to 'int', possible loss of data
+  INCONNECT_Server.vcxproj -> E:\GitDesk\INCONNECT\Server\INCONNECT_Server\x64\Debug\INCONNECT_Server.exe

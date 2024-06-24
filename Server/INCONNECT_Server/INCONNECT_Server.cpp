@@ -8,7 +8,14 @@
 #pragma comment(lib, "ws2_32")
 //::TranmitFile() 함수를 사용하기 위한 헤더와 라이브러리 설정
 #include <Mswsock.h>
+#include <windows.h>
+#include <list>
+#include <iterator>
 #pragma comment(lib, "Mswsock")
+
+CRITICAL_SECTION	g_cs;			//스레드 동기화 객체.
+SOCKET				g_hSocket;		//서버의 리슨 소켓.
+std::list<SOCKET>	g_listClient;	//연결된 클라이언트 소켓 리스트.
 
 // 전송할 모션 데이터 정보를 담기위한 구조체 
 typedef struct ROKOKO_DATA
@@ -28,6 +35,38 @@ void ErrorHandler(const char* pszMessage)
     ::WSACleanup();
     exit(1);
 }
+
+
+void SendChattingMessage(char* pszParam)
+{
+    int nLength = strlen(pszParam);
+    std::list<SOCKET>::iterator it;
+
+    for (it = g_listClient.begin(); it != g_listClient.end(); ++it)
+        ::send(*it, pszParam, sizeof(char) * (nLength + 1), 0);
+}
+
+
+DWORD WINAPI ThreadFunction(LPVOID hClient)
+{
+    char szBuffer[128] = { 0 };
+    int nReceive = 0;
+   
+    while ((nReceive = ::recv((SOCKET)hClient,
+        szBuffer, sizeof(szBuffer), 0)) > 0)
+    {
+        puts(szBuffer);
+        // Send to All Client that received char
+        SendChattingMessage(szBuffer);
+        memset(szBuffer, 0, sizeof(szBuffer));
+    }
+
+    g_listClient.remove((SOCKET)hClient);
+    //::closesocket((SOCKET)hClient);
+    return 0;
+}
+
+
 
 int main()
 {
@@ -64,6 +103,17 @@ int main()
         ErrorHandler("Can't Create I/O Socket.");
     puts("Connect Client");
 
+    DWORD dwThreadID = 0;
+    HANDLE hThread;
+
+    hThread = ::CreateThread(NULL,
+        0,
+        ThreadFunction,
+        (LPVOID)hClient,
+        0,
+        &dwThreadID);
+        
+    ::CloseHandle(hThread);
 
     // Waiting for disconnecting Client.
     ::recv(hClient, NULL, 0, 0);

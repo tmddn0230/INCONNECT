@@ -13,9 +13,20 @@
 #include <iterator>
 #pragma comment(lib, "Mswsock")
 
+typedef struct _USERSESSION
+{
+    SOCKET	hSocket;
+    char	buffer[8192];	//8KB
+} USERSESSION;
+
+
+// 클라이언트 처리를 위한 작업자 스레드 개수.
+#define MAX_THREAD_CNT		4
+
 CRITICAL_SECTION	g_cs;			//스레드 동기화 객체.
 SOCKET				g_hSocket;		//서버의 리슨 소켓.
 std::list<SOCKET>	g_listClient;	//연결된 클라이언트 소켓 리스트.
+HANDLE	g_hIocp;					//IOCP 핸들
 
 // 전송할 모션 데이터 정보를 담기위한 구조체 
 typedef struct ROKOKO_DATA
@@ -29,6 +40,19 @@ typedef struct ROKOKO_DATA
 
 }ROKOKO_DATA;
 
+
+void SendChattingMessage(char* pszParam)
+{
+    int nLength = strlen(pszParam);
+    std::list<SOCKET>::iterator it;
+
+    ::EnterCriticalSection(&g_cs);
+    for (it = g_listClient.begin(); it != g_listClient.end(); ++it)
+        ::send(*it, pszParam, sizeof(char) * (nLength + 1), 0);
+    ::LeaveCriticalSection(&g_cs);
+}
+
+
 void ErrorHandler(const char* pszMessage)
 {
     printf("ERROR : %s\n", pszMessage);
@@ -36,15 +60,84 @@ void ErrorHandler(const char* pszMessage)
     exit(1);
 }
 
-
-void SendChattingMessage(char* pszParam)
+// Close all socket and Listen server
+void CloseAll()
 {
-    int nLength = strlen(pszParam);
     std::list<SOCKET>::iterator it;
 
+    ::EnterCriticalSection(&g_cs);
     for (it = g_listClient.begin(); it != g_listClient.end(); ++it)
-        ::send(*it, pszParam, sizeof(char) * (nLength + 1), 0);
+    {
+        ::shutdown(*it, SD_BOTH);
+        ::closesocket(*it);
+    }
+    ::LeaveCriticalSection(&g_cs);
 }
+
+/////////////////////////////////////////////////////////////////////////
+void CloseClient(SOCKET hSock)
+{
+    ::shutdown(hSock, SD_BOTH);
+    ::closesocket(hSock);
+
+    ::EnterCriticalSection(&g_cs);
+    g_listClient.remove(hSock);
+    ::LeaveCriticalSection(&g_cs);
+}
+
+void ReleaseServer(void)
+{
+    // Close All Client Connect
+    CloseAll();
+    ::Sleep(500);
+
+    //Listen 소켓을 닫는다.
+    ::shutdown(g_hSocket, SD_BOTH);
+    ::closesocket(g_hSocket);
+    g_hSocket = NULL;
+
+    //IOCP 핸들을 닫는다. 이렇게 하면 GQCS() 함수가 FALSE를 반환하며
+    //:GetLastError() 함수가 ERROR_ABANDONED_WAIT_0을 반환한다.
+    //IOCP 스레드들이 모두 종료된다.
+    ::CloseHandle(g_hIocp);
+    g_hIocp = NULL;
+
+    //IOCP 스레드들이 종료되기를 일정시간 동안 기다린다.
+    ::Sleep(500);
+    ::DeleteCriticalSection(&g_cs);
+}
+
+// Quit server when press Ctrl + C
+BOOL CtrlHandler(DWORD dwType)
+{
+    if (dwType == CTRL_C_EVENT)
+    {
+        ReleaseServer();
+
+        puts("*** 채팅서버를 종료합니다! ***");
+        ::WSACleanup();
+        exit(0);
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
+DWORD WINAPI ThreadComplete(LPVOID pParam)
+{
+    DWORD             dwTransferredSize = 0;
+    DWORD             dwFlag = 0;
+    USERSESSION*     pSession = NULL;
+    LPWSAOVERLAPPED  pWol = NULL;
+    BOOL              bResult;
+
+
+    puts("[IOCP Worker Thread Start]");
+
+
+}
+
+
 
 
 DWORD WINAPI ThreadFunction(LPVOID hClient)
@@ -57,11 +150,11 @@ DWORD WINAPI ThreadFunction(LPVOID hClient)
     {
         puts(szBuffer);
         // Send to All Client that received char
-        SendChattingMessage(szBuffer);
+        //SendChattingMessage(szBuffer);
         memset(szBuffer, 0, sizeof(szBuffer));
     }
 
-    g_listClient.remove((SOCKET)hClient);
+    //g_listClient.remove((SOCKET)hClient);
     //::closesocket((SOCKET)hClient);
     return 0;
 }
@@ -74,6 +167,14 @@ int main()
     WSADATA wsa = { 0 };
     if (::WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
         ErrorHandler("Can't Initialize Winsock.");
+
+    // Create CriticalSection
+    ::InitializeCriticalSection(&g_cs);
+
+    // Press Ctrl+C, Binding FUNCTION 
+    if (::SetConsoleCtrlHandler(
+        (PHANDLER_ROUTINE)CtrlHandler, TRUE) == FALSE)
+        puts("ERROR: Unsigned Ctrl+C Event.");
 
     // Create Listen Socket
     SOCKET hSocket = ::socket(AF_INET, SOCK_STREAM, 0);
@@ -113,12 +214,12 @@ int main()
         0,
         &dwThreadID);
         
-    ::CloseHandle(hThread);
+    //::CloseHandle(hThread);
 
     // Waiting for disconnecting Client.
-    ::recv(hClient, NULL, 0, 0);
-    puts("Disconnect Client.");
-
+    //::recv(hClient, NULL, 0, 0);
+    //puts("Disconnect Client.");
+    
     ::closesocket(hClient);
     ::closesocket(hSocket);
     ::WSACleanup();

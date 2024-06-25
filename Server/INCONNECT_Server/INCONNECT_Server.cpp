@@ -52,6 +52,16 @@ void SendChattingMessage(char* pszParam)
     ::LeaveCriticalSection(&g_cs);
 }
 
+// Send Message to All Clients
+void SendMessageAll(char* pszMessage, int nSize)
+{
+    std::list<SOCKET>::iterator it;
+
+    ::EnterCriticalSection(&g_cs);
+    for (it = g_listClient.begin(); it != g_listClient.end(); ++it)
+        ::send(*it, pszMessage, nSize, 0);
+    ::LeaveCriticalSection(&g_cs);
+}
 
 void ErrorHandler(const char* pszMessage)
 {
@@ -91,7 +101,7 @@ void ReleaseServer(void)
     CloseAll();
     ::Sleep(500);
 
-    //Listen 소켓을 닫는다.
+    // Close Listen Socket
     ::shutdown(g_hSocket, SD_BOTH);
     ::closesocket(g_hSocket);
     g_hSocket = NULL;
@@ -133,7 +143,58 @@ DWORD WINAPI ThreadComplete(LPVOID pParam)
 
 
     puts("[IOCP Worker Thread Start]");
+    while (1)
+    {
+        bResult = ::GetQueuedCompletionStatus(
+            g_hIocp,                // IOCP Handle for Dequeue
+            &dwTransferredSize,     // Recieved Size of Data
+            (PULONG_PTR)&pSession,  // Saved Memory that Recieved Data
+            &pWol,                  // OVERLAPPED Struct 
+            INFINITE);              // Waiting Event Infinitely
 
+        if (bResult == TRUE)
+        {
+            // GOOD Case
+             
+            // 1. Client Close Socket and Disconnect Normally
+            if (dwTransferredSize == 0)
+            {
+                CloseClient(pSession->hSocket);
+                delete pWol;
+                delete pSession;
+                puts("\tGQCS: Client Disconnect Normally");
+            }
+
+            // 2. Receive Data from Client
+            else
+            {
+                SendMessageAll(pSession->buffer, dwTransferredSize);
+                memset(pSession->buffer, 0, sizeof(pSession->buffer));
+
+                // Assign to IOCP again
+                DWORD dwReceiveSize = 0;
+                DWORD dwFlah        = 0;
+                WSABUF wsaBuf       = { 0 };
+                wsaBuf.buf = pSession->buffer;
+                wsaBuf.len = sizeof(pSession->buffer);
+
+                ::WSARecv(
+                    pSession->hSocket,        // Client Socket Handle
+                    &wsaBuf,                  // Address of WSABUF Struct Array
+                    1,                        // Number of Array Element 
+                    &dwReceiveSize,
+                    &dwFlag,
+                    pWol,
+                    NULL);
+                if (::WSAGetLastError() != WSA_IO_PENDING)
+                    puts("\tGQCS: ERROR WSARecv() ");
+
+            }
+
+        }
+
+        
+    }
 
 }
 

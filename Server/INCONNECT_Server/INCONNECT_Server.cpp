@@ -1,4 +1,4 @@
-// INCONNECT_Server.cpp : This file contains the 'main' function. Program execution begins and ends there.
+ï»¿// INCONNECT_Server.cpp : This file contains the 'main' function. Program execution begins and ends there.
 //
 
 #include <iostream>
@@ -6,7 +6,7 @@
 
 #include <winsock2.h>
 #pragma comment(lib, "ws2_32")
-//::TranmitFile() ÇÔ¼ö¸¦ »ç¿ëÇÏ±â À§ÇÑ Çì´õ¿Í ¶óÀÌºê·¯¸® ¼³Á¤
+//::TranmitFile() í•¨ìˆ˜ë¥¼ ì‚¬ìš©í•˜ê¸° ìœ„í•œ í—¤ë”ì™€ ë¼ì´ë¸ŒëŸ¬ë¦¬ ì„¤ì •
 #include <Mswsock.h>
 #include <windows.h>
 #include <list>
@@ -20,19 +20,19 @@ typedef struct _USERSESSION
 } USERSESSION;
 
 
-// Å¬¶óÀÌ¾ğÆ® Ã³¸®¸¦ À§ÇÑ ÀÛ¾÷ÀÚ ½º·¹µå °³¼ö.
+// í´ë¼ì´ì–¸íŠ¸ ì²˜ë¦¬ë¥¼ ìœ„í•œ ì‘ì—…ì ìŠ¤ë ˆë“œ ê°œìˆ˜.
 #define MAX_THREAD_CNT		4
 
-CRITICAL_SECTION	g_cs;			//½º·¹µå µ¿±âÈ­ °´Ã¼.
-SOCKET				g_hSocket;		//¼­¹öÀÇ ¸®½¼ ¼ÒÄÏ.
-std::list<SOCKET>	g_listClient;	//¿¬°áµÈ Å¬¶óÀÌ¾ğÆ® ¼ÒÄÏ ¸®½ºÆ®.
-HANDLE	g_hIocp;					//IOCP ÇÚµé
+CRITICAL_SECTION	g_cs;			//ìŠ¤ë ˆë“œ ë™ê¸°í™” ê°ì²´.
+SOCKET				g_hSocket;		//ì„œë²„ì˜ ë¦¬ìŠ¨ ì†Œì¼“.
+std::list<SOCKET>	g_listClient;	//ì—°ê²°ëœ í´ë¼ì´ì–¸íŠ¸ ì†Œì¼“ ë¦¬ìŠ¤íŠ¸.
+HANDLE	g_hIocp;					//IOCP í•¸ë“¤
 
-// Àü¼ÛÇÒ ¸ğ¼Ç µ¥ÀÌÅÍ Á¤º¸¸¦ ´ã±âÀ§ÇÑ ±¸Á¶Ã¼ 
+// ì „ì†¡í•  ëª¨ì…˜ ë°ì´í„° ì •ë³´ë¥¼ ë‹´ê¸°ìœ„í•œ êµ¬ì¡°ì²´ 
 typedef struct ROKOKO_DATA
 {
-  // ROKOKO STUDIO ¿¡¼­ °ªÀ» ¾î¶»°Ô ³Ñ°ÜÁÖ´Â Áö ºÁ¾ßÇÔ
-  // PLUGIN ¿¡¼­ BONE ÀÌ³ª ¾Ö´Ï¸ŞÀÌ¼Ç ¾î¶² °ªÀ» º¸³»ÁÖ´Â°¡ 
+  // ROKOKO STUDIO ì—ì„œ ê°’ì„ ì–´ë–»ê²Œ ë„˜ê²¨ì£¼ëŠ” ì§€ ë´ì•¼í•¨
+  // PLUGIN ì—ì„œ BONE ì´ë‚˜ ì• ë‹ˆë©”ì´ì…˜ ì–´ë–¤ ê°’ì„ ë³´ë‚´ì£¼ëŠ”ê°€ 
 
     char szName[_MAX_FNAME];
     DWORD dwSize;
@@ -106,13 +106,13 @@ void ReleaseServer(void)
     ::closesocket(g_hSocket);
     g_hSocket = NULL;
 
-    //IOCP ÇÚµéÀ» ´İ´Â´Ù. ÀÌ·¸°Ô ÇÏ¸é GQCS() ÇÔ¼ö°¡ FALSE¸¦ ¹İÈ¯ÇÏ¸ç
-    //:GetLastError() ÇÔ¼ö°¡ ERROR_ABANDONED_WAIT_0À» ¹İÈ¯ÇÑ´Ù.
-    //IOCP ½º·¹µåµéÀÌ ¸ğµÎ Á¾·áµÈ´Ù.
+    //IOCP í•¸ë“¤ì„ ë‹«ëŠ”ë‹¤. ì´ë ‡ê²Œ í•˜ë©´ GQCS() í•¨ìˆ˜ê°€ FALSEë¥¼ ë°˜í™˜í•˜ë©°
+    //:GetLastError() í•¨ìˆ˜ê°€ ERROR_ABANDONED_WAIT_0ì„ ë°˜í™˜í•œë‹¤.
+    //IOCP ìŠ¤ë ˆë“œë“¤ì´ ëª¨ë‘ ì¢…ë£Œëœë‹¤.
     ::CloseHandle(g_hIocp);
     g_hIocp = NULL;
 
-    //IOCP ½º·¹µåµéÀÌ Á¾·áµÇ±â¸¦ ÀÏÁ¤½Ã°£ µ¿¾È ±â´Ù¸°´Ù.
+    //IOCP ìŠ¤ë ˆë“œë“¤ì´ ì¢…ë£Œë˜ê¸°ë¥¼ ì¼ì •ì‹œê°„ ë™ì•ˆ ê¸°ë‹¤ë¦°ë‹¤.
     ::Sleep(500);
     ::DeleteCriticalSection(&g_cs);
 }
@@ -124,7 +124,7 @@ BOOL CtrlHandler(DWORD dwType)
     {
         ReleaseServer();
 
-        puts("*** Ã¤ÆÃ¼­¹ö¸¦ Á¾·áÇÕ´Ï´Ù! ***");
+        puts("*** ì±„íŒ…ì„œë²„ë¥¼ ì¢…ë£Œí•©ë‹ˆë‹¤! ***");
         ::WSACleanup();
         exit(0);
         return TRUE;
@@ -162,7 +162,7 @@ DWORD WINAPI ThreadComplete(LPVOID pParam)
                 CloseClient(pSession->hSocket);
                 delete pWol;
                 delete pSession;
-                puts("\tGQCS: Client Disconnect Normally");
+                ErrorHandler("\tGQCS: Client Disconnect Normally");
             }
 
             // 2. Receive Data from Client
@@ -178,6 +178,7 @@ DWORD WINAPI ThreadComplete(LPVOID pParam)
                 wsaBuf.buf = pSession->buffer;
                 wsaBuf.len = sizeof(pSession->buffer);
 
+
                 ::WSARecv(
                     pSession->hSocket,        // Client Socket Handle
                     &wsaBuf,                  // Address of WSABUF Struct Array
@@ -186,19 +187,96 @@ DWORD WINAPI ThreadComplete(LPVOID pParam)
                     &dwFlag,
                     pWol,
                     NULL);
-                if (::WSAGetLastError() != WSA_IO_PENDING)
-                    puts("\tGQCS: ERROR WSARecv() ");
 
+                char szBuffer[128] = { 0 };
+                memcpy(szBuffer, &wsaBuf, sizeof(&wsaBuf)+1);
+                puts(szBuffer);
+
+
+                if (::WSAGetLastError() != WSA_IO_PENDING)
+                    ErrorHandler("\tGQCS: ERROR WSARecv()");
+
+            }
+        }
+        else
+        {
+            // Unusually 
+
+            // 3. Returned Case, Can't Get Finish Packet from Finish queue 
+            if (pWol == NULL)
+            {
+                // Close IOCP Handle Case (Involved Quit Server)
+                ErrorHandler("\tGQCS: IOCP Handle Closed");
+                break;
+            }
+
+            // 4. Client Unusual QUIT AND SERVER QUIT FIRST
+            else
+            {
+                if (pSession != NULL)
+                {
+                    CloseClient(pSession->hSocket);
+                    delete pWol;
+                    delete pSession;
+                }
+
+                ErrorHandler("\tGQCS: Client Unusual QUIT AND SERVER QUIT FIRST");
             }
 
         }
-
         
     }
 
+    puts("[IOCP Worker Thread Close]");
+    return 0;
 }
 
+DWORD WINAPI ThreadAcceptLoop(LPVOID pParam)
+{
+    LPWSAOVERLAPPED	pWol = NULL;
+    DWORD			dwReceiveSize, dwFlag;
+    USERSESSION* pNewUser;
+    int				nAddrSize = sizeof(SOCKADDR);
+    WSABUF			wsaBuf;
+    SOCKADDR		ClientAddr;
+    SOCKET			hClient;
+    int				nRecvResult = 0;
 
+    while ((hClient = ::accept(g_hSocket,
+        &ClientAddr, &nAddrSize)) != INVALID_SOCKET)
+    {
+        puts("New Client Connected.");
+        ::EnterCriticalSection(&g_cs);
+        g_listClient.push_back(hClient);
+        ::LeaveCriticalSection(&g_cs);
+
+        // Create Session Object about New Client
+        pNewUser = new USERSESSION;
+        ::ZeroMemory(pNewUser, sizeof(USERSESSION));
+        pNewUser->hSocket = hClient;
+
+        // Create OVERLAPPED Struct for Async Recv 
+        pWol = new WSAOVERLAPPED;
+        ::ZeroMemory(pWol, sizeof(WSAOVERLAPPED));
+
+        // Connect (Connected)Client Socket Handle to ICOP
+        ::CreateIoCompletionPort((HANDLE)hClient, g_hIocp,
+            (ULONG_PTR)pNewUser,        //KEY
+            0);
+
+        dwReceiveSize = 0;
+        dwFlag = 0;
+        wsaBuf.buf = pNewUser->buffer;
+        wsaBuf.len = sizeof(pNewUser->buffer);
+
+        // Async Recv that Info from Client
+        nRecvResult = ::WSARecv(hClient, &wsaBuf, 1, &dwReceiveSize,
+            &dwFlag, pWol, NULL);
+        if (::WSAGetLastError() != WSA_IO_PENDING)
+        ErrorHandler("ERROR: WSARecv() != WSA_IO_PENDING");
+    }
+    return 0;
+}
 
 
 DWORD WINAPI ThreadFunction(LPVOID hClient)
@@ -235,55 +313,73 @@ int main()
     // Press Ctrl+C, Binding FUNCTION 
     if (::SetConsoleCtrlHandler(
         (PHANDLER_ROUTINE)CtrlHandler, TRUE) == FALSE)
-        puts("ERROR: Unsigned Ctrl+C Event.");
+        ErrorHandler("ERROR: Unsigned Ctrl+C Event.");
 
-    // Create Listen Socket
-    SOCKET hSocket = ::socket(AF_INET, SOCK_STREAM, 0);
-    if (hSocket == INVALID_SOCKET)
-        ErrorHandler("Can't Create Listen Socket.");
-
-    // Port Binding 
-    SOCKADDR_IN svraddr = { 0 };
-    svraddr.sin_family = AF_INET;
-    svraddr.sin_port = htons(25000);
-    svraddr.sin_addr.S_un.S_addr = htonl(INADDR_ANY);
-    if (::bind(hSocket,
-        (SOCKADDR*)&svraddr, sizeof(svraddr)) == SOCKET_ERROR)
-        ErrorHandler("¼ÒÄÏ¿¡ IPÁÖ¼Ò¿Í Æ÷Æ®¸¦ ¹ÙÀÎµå ÇÒ ¼ö ¾ø½À´Ï´Ù.");
+    // Create IOCP
+    g_hIocp = ::CreateIoCompletionPort(
+        INVALID_HANDLE_VALUE,       // Nothing Connect File
+        NULL,                         // None Basic Handle
+        0,                            // Not Matched Key(identify)
+        0);                           // OS judged Thread Number
     
-    // Change Listen Mode
-    if (::listen(hSocket, SOMAXCONN) == SOCKET_ERROR)
-        ErrorHandler("Can't Change Listen Mode");
-    puts("Start INCONNECT Server.");
+    if (g_hIocp == NULL)
+    {
+        ErrorHandler("ERROR : Can't Create IOCP");
+        return 0;
+    }
 
-    // Accept Client and Create New Socket(Open)
-    SOCKADDR_IN clientaddr = { 0 };
-    int nAddrLen = sizeof(clientaddr);
-    SOCKET hClient = ::accept(hSocket,
-        (SOCKADDR*)&clientaddr, &nAddrLen);
-    if (hClient == INVALID_SOCKET)
-        ErrorHandler("Can't Create I/O Socket.");
-    puts("Connect Client");
-
-    DWORD dwThreadID = 0;
+    // Create IOCP Thread 
     HANDLE hThread;
+    DWORD dwThreadID;
+    for (int i = 0; i < MAX_THREAD_CNT; ++i)
+    {
+        dwThreadID = 0; 
+        // Received String From Client
+        hThread = ::CreateThread(NULL, // Guard Property 
+            0,                            // Stack Memory = 1MB
+            ThreadComplete,             // Want Processing Function Name as Thread
+            (LPVOID)NULL,
+            0,                            // Create Flag is Basic Value
+            &dwThreadID);                // Saving Address of Created Thread ID
+            
+        ::CloseHandle(hThread);
+    }
 
-    hThread = ::CreateThread(NULL,
-        0,
-        ThreadFunction,
-        (LPVOID)hClient,
-        0,
-        &dwThreadID);
-        
-    //::CloseHandle(hThread);
+    // Create Server Listen Socket 
+    g_hSocket = ::WSASocket(AF_INET, SOCK_STREAM, IPPROTO_TCP,
+                       NULL, 0, WSA_FLAG_OVERLAPPED);
 
-    // Waiting for disconnecting Client.
-    //::recv(hClient, NULL, 0, 0);
-    //puts("Disconnect Client.");
-    
-    ::closesocket(hClient);
-    ::closesocket(hSocket);
-    ::WSACleanup();
+    // Bind() / Listen () 
+    SOCKADDR_IN addrsvr;
+    addrsvr.sin_family = AF_INET;
+    addrsvr.sin_addr.S_un.S_addr = ::htonl(INADDR_ANY);
+    addrsvr.sin_port = ::htons(25000);
+
+    if (::bind(g_hSocket,
+        (SOCKADDR*)&addrsvr, sizeof(SOCKADDR_IN)) == SOCKET_ERROR)
+    {
+        ErrorHandler("ERROR: Port is aready run");
+        ReleaseServer();
+        return 0;
+    }
+
+    if (::listen(g_hSocket, SOMAXCONN) == SOCKET_ERROR)
+    {
+        ErrorHandler("ERROR: Can't Change Listen Mode");
+        ReleaseServer();
+        return 0;
+    }
+
+    // Accept Client Connect repeat
+    hThread = ::CreateThread(NULL, 0, ThreadAcceptLoop,
+        (LPVOID)NULL, 0, &dwThreadID);
+    ::CloseHandle(hThread);
+
+    // Waiting for _tmain() Can't return 
+    puts("*** ì±„íŒ…ì„œë²„ë¥¼ ì‹œì‘í•©ë‹ˆë‹¤! ***");
+    while (1)
+        getchar();
+
     return 0;
 }
 

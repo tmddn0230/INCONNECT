@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -66,7 +66,13 @@ public class ICNetworkManager : MonoBehaviour
     {
         if (!bSocketReady) return;
 
-        mWriter.WriteLine(data);
+
+        char[] chars = data.ToCharArray();
+        Console.WriteLine(String.Join(", ", chars));        // a, b, c
+
+        byte[] bytesForEncoding = Encoding.UTF8.GetBytes(data);
+
+        mWriter.WriteLine(bytesForEncoding);
         mWriter.Flush();
     }
 

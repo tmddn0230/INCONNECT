@@ -169,6 +169,7 @@ DWORD WINAPI ThreadComplete(LPVOID pParam)
             else
             {
                 SendMessageAll(pSession->buffer, dwTransferredSize);
+                puts(pSession->buffer);
                 memset(pSession->buffer, 0, sizeof(pSession->buffer));
 
                 // Assign to IOCP again
@@ -188,9 +189,7 @@ DWORD WINAPI ThreadComplete(LPVOID pParam)
                     pWol,
                     NULL);
 
-                char szBuffer[128] = { 0 };
-                memcpy(szBuffer, &wsaBuf, sizeof(&wsaBuf)+1);
-                puts(szBuffer);
+            
 
 
                 if (::WSAGetLastError() != WSA_IO_PENDING)

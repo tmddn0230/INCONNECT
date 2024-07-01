@@ -9,6 +9,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.IO;
+using System.Runtime.InteropServices.ComTypes;
 
 public class ICNetworkManager : MonoBehaviour
 {
@@ -60,6 +61,17 @@ public class ICNetworkManager : MonoBehaviour
         {
             Send("SIBAL HUCK");
         }
+
+        if (bSocketReady && mStream.DataAvailable)
+        {
+            string data = mReader.ReadLine();
+            if (data != null)
+            {
+                Debug.Log(data);
+            }
+               // OnIncomingData(data);
+        }
+
     }
 
     void Send(string data)

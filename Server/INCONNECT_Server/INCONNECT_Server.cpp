@@ -28,17 +28,38 @@ SOCKET				g_hSocket;		//서버의 리슨 소켓.
 std::list<SOCKET>	g_listClient;	//연결된 클라이언트 소켓 리스트.
 HANDLE	g_hIocp;					//IOCP 핸들
 
+// 
+typedef struct Bone_Data
+{
+    float PosX;
+    float PosY;
+    float PosZ;
+    float RotX;
+    float RotY;
+    float RotZ;
+    float RotW;
+
+}Bone_Data;
+
 // 전송할 모션 데이터 정보를 담기위한 구조체 
 typedef struct ROKOKO_DATA
 {
   // ROKOKO STUDIO 에서 값을 어떻게 넘겨주는 지 봐야함
   // PLUGIN 에서 BONE 이나 애니메이션 어떤 값을 보내주는가 
-
-    char szName[_MAX_FNAME];
+    char UserName[_MAX_FNAME];
     DWORD dwSize;
+    
+    Bone_Data Head;
+    Bone_Data Spine;
+    Bone_Data Hip;
+    Bone_Data Leg_R;
+    Bone_Data Leg_L;
+    Bone_Data Hand_R;
+    Bone_Data Hand_L;
 
 
 }ROKOKO_DATA;
+
 
 
 void SendChattingMessage(char* pszParam)

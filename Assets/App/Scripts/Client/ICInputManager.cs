@@ -77,14 +77,14 @@ public class ICInputManager : MonoBehaviour
             }
 
             // A Button (Open Emotion panel)
-            if (OVRInput.Get(OVRInput.Button.One, OVRInput.Controller.RTouch))
+            if (OVRInput.GetUp(OVRInput.Button.One, OVRInput.Controller.RTouch))
             {
                 bool bIsActive = mEmotionPanel.activeSelf;
                 mEmotionPanel.SetActive(!bIsActive);
             }
 
             // B Button (Open 2D UI)
-            if (OVRInput.Get(OVRInput.Button.Two, OVRInput.Controller.RTouch))
+            if (OVRInput.GetUp(OVRInput.Button.Two, OVRInput.Controller.RTouch))
             {
                 bool bIsActive = mUIPanel.activeSelf;
                 mUIPanel.SetActive(!bIsActive);
@@ -117,7 +117,7 @@ public class ICInputManager : MonoBehaviour
             }
 
             // Y Button (Open 2D UI)
-            if (OVRInput.Get(OVRInput.Button.Four, OVRInput.Controller.LTouch))
+            if (OVRInput.GetUp(OVRInput.Button.Four, OVRInput.Controller.LTouch))
             {
                 bool bIsActive = mUIPanel.activeSelf;
                 mUIPanel.SetActive(!bIsActive);  
@@ -138,7 +138,7 @@ public class ICInputManager : MonoBehaviour
     // R Controller - Rotation
     private void HandleRightJoystickRotation()
     {
-        Vector2 mRightJoystick = OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick, OVRInput.Controller.RTouch);
+        Vector2 mRightJoystick = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick, OVRInput.Controller.RTouch);
         float mRotateDirection = mRightJoystick.x;
         transform.Rotate(0, mRotateDirection * mRotationSpeed * Time.deltaTime, 0);
     }

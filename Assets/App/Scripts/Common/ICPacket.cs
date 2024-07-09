@@ -1,18 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+namespace ICProtocol;
 
-public class ICPacket : MonoBehaviour
+
+ struct stBoneData : public stHeader
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
+  int UID;
+  //ROKOKO_DATA rokoko;
+  //
+  //stBoneData()
+  //{
+  //    UID = 0;
+  //    rokoko = ROKOKO_DATA();
+  //    SetHeader(prBoneData, sizeof(stBoneData));
+  //}
+ }
 
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
-}

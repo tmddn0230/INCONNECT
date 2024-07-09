@@ -836,7 +836,7 @@ PlayerSettings:
   webGLMemoryGeometricGrowthCap: 96
   webGLPowerPreference: 2
   scriptingDefineSymbols:
-    Standalone: INCONNECT;BONENUMBER
+    Standalone: HEADSIZE
   additionalCompilerArguments: {}
   platformArchitecture: {}
   scriptingBackend: {}

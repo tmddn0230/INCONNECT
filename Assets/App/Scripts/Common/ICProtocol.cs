@@ -2,10 +2,11 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ICProtocol : MonoBehaviour
+namespace ICProtocol
 {
     const int INCONNECT = 2222;
     const int BONENUMBER = 6;
+    int HEADSIZE;
 
     enum enBone
     {
@@ -62,15 +63,27 @@ public class ICProtocol : MonoBehaviour
         Bone_Data[] datas;
     }
 
-    // Start is called before the first frame update
-    void Start()
+    struct stHeader
     {
-        
-    }
+        int nID;
+        int nSize;
+        int nType;
+        int nCheckSum;
 
-    // Update is called once per frame
-    void Update()
-    {
-        
+        stHeader(int nid, int nsize, int ntype, int nchecksum)
+        {
+            this.nID = nid;
+            this.nSize = nsize;
+            this.nType = ntype;
+            this.nCheckSum = nchecksum;
+        }
+
+        void SetHeader(int id, int len)
+        {
+            this.nType = INCONNECT;
+            this.nID = id;
+            this.nSize = len;
+            this.nCheckSum = nType + nID + nSize;
+        }
     }
 }

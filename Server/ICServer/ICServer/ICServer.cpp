@@ -6,6 +6,34 @@
 #include "ICGlobal.h"
 #include "ICServer.h"
 
+// Quit server when press Ctrl + C
+BOOL CtrlHandler(DWORD dwType)
+{
+    if (dwType == CTRL_C_EVENT)
+    {
+        gServerHandle = NULL;
+        // 연결된 모든 클라이언트 및 리슨 소켓을 닫고 프로그램을 종료한다.
+        ::shutdown(gServerSocket, SD_BOTH);
+        // 연결 리스트에 등록된 모든 정보를 삭제한다.
+
+        for (int i = 0; i < gUser.GetUserCount(); i++) {
+            gUser.mUser[i].LogOut();
+            puts("모든 클라이언트 연결을 종료했습니다.");
+        }
+       
+        //클라이언트와 통신하는 스레드들이 종료되기를 기다린다.
+        ::Sleep(100);
+        ::closesocket(gServerSocket);
+
+        //윈속 해제
+        ::WSACleanup();
+        exit(0);
+        return TRUE;
+    }
+
+    return FALSE;
+}
+
 int main() {
     
     Init();
@@ -51,6 +79,16 @@ int main() {
    //}
    //
    //return (int)msg.wParam;
+       // Press Ctrl+C, Binding FUNCTION 
+    if (::SetConsoleCtrlHandler(
+        (PHANDLER_ROUTINE)CtrlHandler, TRUE) == FALSE)
+        puts("ERROR: Unsigned Ctrl+C Event.");
+    
+    while (CtrlHandler)
+    {
+
+    }
+
     return 0;
 }
 
@@ -154,7 +192,7 @@ unsigned __stdcall ServerThread(void* pArg)
             continue;
         }
         //유저등록에 실패하면 소켓을 닫아버린다..
-        //  이 부분 구현 필요 User Manager
+
        if (gUser.AddUser(socket, ca) == false)
        {
            closesocket(socket);

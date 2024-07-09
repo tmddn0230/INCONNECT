@@ -6,6 +6,7 @@
 
 void Init();
 
+BOOL CtrlHandler(DWORD dwType);
 BOOL WinSockStart();
 UserManager gUser;
 

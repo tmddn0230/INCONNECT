@@ -22,8 +22,6 @@ int gServerNum = 0;
 
 int gUDPPort = 0;
 
-//UserManager gUser;
-
 int logcount = 0;
 
 void Log(const char* format, ...)

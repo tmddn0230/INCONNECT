@@ -42,7 +42,7 @@ bool UserManager::AddUser(SOCKET sock, sockaddr_in ip)
 
 		mUser[i].Init(i, sock, ip);
 
-		Log("AddUser: %d %d.%d.%d.%d", i,
+		printf("AddUser: %d %d.%d.%d.%d", i,
 			ip.sin_addr.S_un.S_un_b.s_b1,
 			ip.sin_addr.S_un.S_un_b.s_b2,
 			ip.sin_addr.S_un.S_un_b.s_b3,

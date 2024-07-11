@@ -23,6 +23,14 @@ public class ICNetworkManager : MonoBehaviour
     StreamWriter mWriter;
     StreamReader mReader;
 
+    // Thread 
+    Thread sendThread;
+    Thread recvThread;
+    Queue<byte[]> sendQueue;
+    Queue<byte[]> recvQueue;
+    bool bRun = false;
+    object queueLock = new object();
+
     public void ConnectToServer()
     {
         // if Client Connected aready, return

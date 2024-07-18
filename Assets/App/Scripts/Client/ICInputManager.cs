@@ -132,7 +132,7 @@ public class ICInputManager : MonoBehaviour
         Vector2 mLeftJoystick = OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick, OVRInput.Controller.LTouch);
         Vector3 mMoveDirection = new Vector3(mLeftJoystick.x, 0, mLeftJoystick.y);
         mMoveDirection = transform.TransformDirection(mMoveDirection);
-        mCharacterController.Move(mMoveDirection * mMoveSpeed * Time.deltaTime);
+        //mCharacterController.Move(mMoveDirection * mMoveSpeed * Time.deltaTime);
     }
 
     // R Controller - Rotation

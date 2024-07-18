@@ -230,7 +230,7 @@ namespace Rokoko.Inputs
         /// <summary>
         /// Get Transform from a given HumanBodyBones.
         /// </summary>
-        private Transform GetBone(HumanBodyBones bone)
+        public Transform GetBone(HumanBodyBones bone)
         {
             switch (boneMapping)
             {

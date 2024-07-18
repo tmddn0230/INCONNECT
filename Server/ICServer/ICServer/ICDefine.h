@@ -7,7 +7,7 @@ typedef union stICAddress
 }stICAddress;
 
 #define INCONNECT 2222
-#define BONENUMBER 6
+#define BONENUMBER 3
 
 #define INVALID_VALUE -1
 #define MAX_BUFFER 65535 // 16 bit , 2byte

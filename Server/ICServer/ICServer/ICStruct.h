@@ -12,7 +12,7 @@ struct FVector2D
 
 struct Bone_Data
 {
-	uint16 BoneType;
+	//uint16 BoneType;
 
 	// float = 4byte
 	float PosX;

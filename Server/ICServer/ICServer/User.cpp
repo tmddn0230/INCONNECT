@@ -167,6 +167,8 @@ void User::Recv()
 	int size = 0;
 	if (mRecvWrite < MAX_RECV)
 		size = recv(mhSocket, &mRecvBuffer[mRecvWrite], MAX_RECV - mRecvWrite, 0);
+	    stTestPacket header;
+	    memcpy(&header, mRecvBuffer, sizeof(stTestPacket));
 
 	if (size > 0) {
 		// ADD at Current RecvBuffer's Length
@@ -179,7 +181,6 @@ void User::Recv()
 		while (mRecvWrite >= HEADSIZE) {
 			stHeader header;
 			memcpy(&header, mRecvBuffer, HEADSIZE);
-
 			// Why didn't use ?
 			//if (header.nID >= PROTOCOL_END || header.nID <= PROTOCOL_START) {
 			//	Clear();

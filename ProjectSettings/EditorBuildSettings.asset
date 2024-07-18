@@ -4,5 +4,13 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
-  m_configObjects: {}
+  m_Scenes:
+  - enabled: 1
+    path: Assets/App/Scenes/ICPrototype.unity
+    guid: c5af336e3953a7949a9c89167c8707bb
+  - enabled: 1
+    path: Assets/App/Scenes/ICPrototype_Cafe.unity
+    guid: ed4a5b47730a3514bae6ecad9eb93c18
+  m_configObjects:
+    Unity.XR.Oculus.Settings: {fileID: 11400000, guid: 8d8458b49eb33e74fb658e9064b41d64, type: 2}
+    com.unity.xr.management.loader_settings: {fileID: 11400000, guid: f4dfe7882b6f08147a5d335e5973d9f4, type: 2}

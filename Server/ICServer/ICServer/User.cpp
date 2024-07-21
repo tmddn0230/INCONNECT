@@ -167,8 +167,8 @@ void User::Recv()
 	int size = 0;
 	if (mRecvWrite < MAX_RECV)
 		size = recv(mhSocket, &mRecvBuffer[mRecvWrite], MAX_RECV - mRecvWrite, 0);
-	    stTestPacket header;
-	    memcpy(&header, mRecvBuffer, sizeof(stTestPacket));
+	    //stTestPacket header;
+	    //memcpy(&header, mRecvBuffer, sizeof(stTestPacket));
 
 	if (size > 0) {
 		// ADD at Current RecvBuffer's Length
@@ -234,4 +234,8 @@ void User::RecvBoneData(char* packet)
 	stBoneData req;
 	memcpy(&req, packet, sizeof(stBoneData));
 
+	// Test ³¡³ª¸é 
+	// SendOther()
+	g_User.SendAll(packet, sizeof(stBoneData));
+	puts("Recv And Send All Packet");
 }

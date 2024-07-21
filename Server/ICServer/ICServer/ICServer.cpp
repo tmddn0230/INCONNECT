@@ -16,8 +16,8 @@ BOOL CtrlHandler(DWORD dwType)
         ::shutdown(gServerSocket, SD_BOTH);
         // 연결 리스트에 등록된 모든 정보를 삭제한다.
 
-        for (int i = 0; i < gUser.GetUserCount(); i++) {
-            gUser.mUser[i].LogOut();
+        for (int i = 0; i < g_User.GetUserCount(); i++) {
+            g_User.mUser[i].LogOut();
             puts("모든 클라이언트 연결을 종료했습니다.");
         }
        
@@ -193,7 +193,7 @@ unsigned __stdcall ServerThread(void* pArg)
         }
         //유저등록에 실패하면 소켓을 닫아버린다..
 
-       if (gUser.AddUser(socket, ca) == false)
+       if (g_User.AddUser(socket, ca) == false)
        {
            closesocket(socket);
        
@@ -234,27 +234,27 @@ unsigned __stdcall UserThread(void* pArg)
                 inum = UserArray + i;
 
                 // UserManager
-                if (gUser.mUser[inum].mhSocket)
+                if (g_User.mUser[inum].mhSocket)
                 {
                 
-                    dwRet = WSAEnumNetworkEvents(gUser.mUser[inum].mhSocket, gEvent[inum], &events);
+                    dwRet = WSAEnumNetworkEvents(g_User.mUser[inum].mhSocket, gEvent[inum], &events);
                 
                     if (dwRet == 0)
                     {
                         //FD_READ EVENT 면.
                         if ((events.lNetworkEvents & FD_READ) == FD_READ)
                         {
-                            gUser.mUser[inum].Recv();
+                            g_User.mUser[inum].Recv();
                         }
                         if ((events.lNetworkEvents & FD_WRITE) == FD_WRITE)
                         {
-                            gUser.mUser[inum].FlushSendBuffer();
+                            g_User.mUser[inum].FlushSendBuffer();
                         }
                         if ((events.lNetworkEvents & FD_CLOSE) == FD_CLOSE)
                         {
                             //접속 종료 처리
                             //Log("g_User.DelUser( inum %d );", inum );
-                            gUser.DelUser(inum);
+                            g_User.DelUser(inum);
                         }
                     }
                 }

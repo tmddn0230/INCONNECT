@@ -41,9 +41,9 @@ struct stHeader
 	};
 	void SetHeader(int id, int len)
 	{
-		nType = INCONNECT;
 		nID = id;
 		nSize = len;
+		nType = INCONNECT;
 		nCheckSum = nType + nID + nSize;
 	};
 };

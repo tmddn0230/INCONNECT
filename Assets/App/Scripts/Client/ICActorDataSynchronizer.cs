@@ -66,21 +66,20 @@ public class ICActorDataSynchronizer : MonoBehaviour
 
 public struct CoreBoneData
 {
-    public float[] hipPosition;
-    public float[] hipRotation;
-    public float[] spinePosition;
-    public float[] spineRotation;
-    public float[] chestPosition;
-    public float[] chestRotation;
-    public float[] neckPosition;
-    public float[] neckRotation;
+    // Body : 5
     public float[] headPosition;
     public float[] headRotation;
-    public float[] leftFootPosition;
-    public float[] leftFootRotation;
-    public float[] rightFootPosition;
-    public float[] rightFootRotation;
+    public float[] neckPosition;
+    public float[] neckRotation;
+    public float[] chestPosition;
+    public float[] chestRotation;
+    public float[] spinePosition;
+    public float[] spineRotation;
+    public float[] hipPosition;
+    public float[] hipRotation;
 
+
+    // Hand : 6
     public float[] leftUpperArmPosition;
     public float[] leftUpperArmRotation;
     public float[] leftLowerArmPosition;
@@ -94,6 +93,11 @@ public struct CoreBoneData
     public float[] rightHandPosition;
     public float[] rightHandRotation;
 
+    // Leg : 2
+    public float[] leftFootPosition;
+    public float[] leftFootRotation;
+    public float[] rightFootPosition;
+    public float[] rightFootRotation;
 }
 
 

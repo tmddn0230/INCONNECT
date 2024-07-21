@@ -35,17 +35,15 @@ struct stLoginAck : public stHeader
 
 struct stBoneData : public stHeader
 {
-	int UID;
-	ROKOKO_DATA rokoko;
-	ROKOKO_DATA rokoko1;
-	ROKOKO_DATA rokoko2;
+	uint16 UID;
+	float v[3][13];
+	float q[4][13];
 
 	stBoneData()
 	{
 		UID = 0;
-		rokoko = ROKOKO_DATA();
-		rokoko1 = ROKOKO_DATA();
-		rokoko2 = ROKOKO_DATA();
+		memset(v, 0, sizeof(v));
+		memset(q, 0, sizeof(q));
 		SetHeader(prBoneData, sizeof(stBoneData));
 	};
 };

@@ -30,7 +30,7 @@ extern int gServerNum;
 
 
 // User
-//extern UserManager gUser;
+extern UserManager g_User;
 
 // Function
 void Log(const char* format, ...);

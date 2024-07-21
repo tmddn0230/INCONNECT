@@ -14,6 +14,8 @@ using Packet;
 using System.Collections.Concurrent;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.InteropServices;
+using UnityEditor.Sprites;
+using Unity.VisualScripting;
 
 public class ICNetworkManager : MonoBehaviour
 {
@@ -37,6 +39,7 @@ public class ICNetworkManager : MonoBehaviour
     bool bRun = false;
     object queueLock = new object();
 
+    // Receiver
 
     //packetStruct
     public Vector3[] positions;
@@ -60,6 +63,8 @@ public class ICNetworkManager : MonoBehaviour
             mReader = new StreamReader(mStream);
             sendThread = new Thread(ProcessSendPackets);
             sendThread.Start();
+            
+
             bRun = true;
             bSocketReady = true;
         }
@@ -82,6 +87,12 @@ public class ICNetworkManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
 
+            //CoreBoneData testDatas;
+            //testDatas = new CoreBoneData();
+            ////Head
+            //testDatas.headPosition = new float[] {1.0f, 2.0f, 3.0f };
+            
+
             // Dummy Vec, Rot
             positions = new Vector3[3];
             Vector3 vector0 = new Vector3(1, 0, 0);
@@ -103,9 +114,10 @@ public class ICNetworkManager : MonoBehaviour
 
 
             // Queue Init
-            ICPacket packetStruct = new ICPacket(2, positions, rotations);
-            SendPacketQueue = new ICPacketQueue();
+            ICPacket packetStruct = new ICPacket();
+            packetStruct.SetMotionProtocol(Marshal.SizeOf(packetStruct));
 
+            SendPacketQueue = new ICPacketQueue();
             SendPacketQueue.Enqueue(packetStruct);
 
             
@@ -115,16 +127,10 @@ public class ICNetworkManager : MonoBehaviour
             Send("SIBAL HUCK");
         }
 
-        if (bSocketReady && mStream.DataAvailable)
+        if (mStream != null && mStream.DataAvailable)
         {
-            string data = mReader.ReadLine();
-            if (data != null)
-            {
-                Debug.Log(data);
-            }
-               // OnIncomingData(data);
+            ReceiveData();
         }
-
     }
 
     void Send(string data)
@@ -153,24 +159,19 @@ public class ICNetworkManager : MonoBehaviour
             ICPacket packet = SendPacketQueue.Dequeue();
             if (packet != null)
             {
-                // Process 
-                //Debug.Log("Send Packet!");
-                //using (MemoryStream ms = new MemoryStream())
-                //{
-                //    BinaryFormatter bf = new BinaryFormatter();
-                //    //bf.Serialize(ms, packet.packetHeader);
-                //    bf.Serialize(ms, packet);
-                //    byte[] data = ms.ToArray();
-                //    mStream.Write(data, 0, data.Length);
-                //    Debug.Log("Packet sent");
-                //}
 
                 using (MemoryStream ms = new MemoryStream())
                 {
                     BinaryWriter writer = new BinaryWriter(ms);
 
+                    // Header First
+                    //writer.Write(BitConverter.GetBytes(System.Net.IPAddress.HostToNetworkOrder(packet.packetHeader.nID)));
+                    writer.Write(packet.packetHeader.nID);
+                    writer.Write(packet.packetHeader.nSize);
+                    writer.Write(packet.packetHeader.nType);
+                    writer.Write(packet.packetHeader.nCheckSum);
                     // Convert UID to network byte order (big endian)
-                    writer.Write(BitConverter.GetBytes(System.Net.IPAddress.HostToNetworkOrder(packet.UID)));
+                    writer.Write(packet.UID);
 
                     // Write positions and rotations
                     foreach (float position in packet.positions)
@@ -183,7 +184,28 @@ public class ICNetworkManager : MonoBehaviour
                     }
 
                     byte[] data = ms.ToArray();
-                    mStream.Write(data, 0, data.Length);
+                    packet.SetMotionProtocol(data.Length);
+                    ms.SetLength(0);
+
+                    // Final Packet
+                    writer.Write(packet.packetHeader.nID);
+                    writer.Write(packet.packetHeader.nSize);
+                    writer.Write(packet.packetHeader.nType);
+                    writer.Write(packet.packetHeader.nCheckSum);
+                    writer.Write(packet.UID);
+                    // Write positions and rotations
+                    foreach (float position in packet.positions)
+                    {
+                        writer.Write(position);
+                    }
+                    foreach (float rotation in packet.rotations)
+                    {
+                        writer.Write(rotation);
+                    }
+
+                    byte[] finalData = ms.ToArray();
+
+                    mStream.Write(finalData, 0, finalData.Length);
                 }
 
             }
@@ -196,6 +218,86 @@ public class ICNetworkManager : MonoBehaviour
         }
     }
 
+
+    private void ReceiveData()
+    {
+        try
+        {
+            // 헤더 크기를 읽습니다
+            int headerSize = Marshal.SizeOf(typeof(StHeader));
+            byte[] headerBuffer = new byte[headerSize];
+            int bytesRead = mStream.Read(headerBuffer, 0, headerSize);
+
+            if (bytesRead != headerSize)
+            {
+                throw new Exception("Failed to read packet header");
+            }
+
+            // 헤더 정보를 읽어 패킷 크기를 확인합니다
+            StHeader header = ByteArrayToStructure<StHeader>(headerBuffer);
+            int totalSize = header.nSize - headerSize;
+
+            // 전체 패킷 데이터를 읽습니다
+            byte[] buffer = new byte[totalSize];
+            bytesRead = mStream.Read(buffer, 0, totalSize);
+
+            if (bytesRead != totalSize)
+            {
+                throw new Exception("Failed to read packet data");
+            }
+
+            // 데이터를 MemoryStream에 저장하고 읽어 들입니다
+            using (MemoryStream ms = new MemoryStream(buffer))
+            {
+                BinaryReader reader = new BinaryReader(ms);
+
+                // UID 읽기
+                long UID = reader.ReadInt64();
+
+                // positions 및 rotations 읽기
+                int numElements = (totalSize - sizeof(long)) / (sizeof(float) * 2);
+                float[] positions = new float[numElements];
+                float[] rotations = new float[numElements];
+
+                for (int i = 0; i < numElements; i++)
+                {
+                    positions[i] = reader.ReadSingle();
+                }
+
+                for (int i = 0; i < numElements; i++)
+                {
+                    rotations[i] = reader.ReadSingle();
+                }
+
+                //// 패킷 생성
+                //Packet packet = new Packet
+                //{
+                //    packetHeader = header,
+                //    UID = UID,
+                //    positions = positions,
+                //    rotations = rotations
+                //};
+                //
+                //lock (packetQueue)
+                //{
+                //    packetQueue.Enqueue(packet);
+                //}
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Receive Error: " + e.Message);
+        }
+    }
+
+    private T ByteArrayToStructure<T>(byte[] bytes) where T : struct
+    {
+        IntPtr ptr = Marshal.AllocHGlobal(bytes.Length);
+        Marshal.Copy(bytes, 0, ptr, bytes.Length);
+        T obj = (T)Marshal.PtrToStructure(ptr, typeof(T));
+        Marshal.FreeHGlobal(ptr);
+        return obj;
+    }
 
     void OnApplicationQuit()
     {

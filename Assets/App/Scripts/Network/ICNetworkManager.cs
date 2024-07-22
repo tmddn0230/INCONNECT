@@ -16,6 +16,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.InteropServices;
 using UnityEditor.Sprites;
 using Unity.VisualScripting;
+using Newtonsoft.Json;
 
 public class ICNetworkManager : MonoBehaviour
 {
@@ -63,7 +64,7 @@ public class ICNetworkManager : MonoBehaviour
             mReader = new StreamReader(mStream);
             sendThread = new Thread(ProcessSendPackets);
             sendThread.Start();
-            
+            SendPacketQueue = new ICPacketQueue();
 
             bRun = true;
             bSocketReady = true;
@@ -86,41 +87,12 @@ public class ICNetworkManager : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
-
-            //CoreBoneData testDatas;
-            //testDatas = new CoreBoneData();
-            ////Head
-            //testDatas.headPosition = new float[] {1.0f, 2.0f, 3.0f };
-            
-
-            // Dummy Vec, Rot
-            positions = new Vector3[3];
-            Vector3 vector0 = new Vector3(1, 0, 0);
-            Vector3 vector1 = new Vector3(1, 2, 0);
-            Vector3 vector2 = new Vector3(1, 2, 3);
-
-            positions[0] = vector0;
-            positions[1] = vector1;
-            positions[2] = vector2;
-
-            rotations = new Quaternion[3];
-            Quaternion quat0 = new Quaternion(1, 0, 0, 1);
-            Quaternion quat1 = new Quaternion(1, 2, 0, 1);
-            Quaternion quat2 = new Quaternion(1, 2, 3, 1);
-
-            rotations[0] = quat0;
-            rotations[1] = quat1;
-            rotations[2] = quat2;
-
-
             // Queue Init
             ICPacket packetStruct = new ICPacket();
+            packetStruct.MakeBone();
             packetStruct.SetMotionProtocol(Marshal.SizeOf(packetStruct));
-
-            SendPacketQueue = new ICPacketQueue();
-            SendPacketQueue.Enqueue(packetStruct);
-
             
+            SendPacket_Bone(packetStruct);
         }
         else if(Input.GetKeyDown(KeyCode.Alpha2))
         {
@@ -147,6 +119,20 @@ public class ICNetworkManager : MonoBehaviour
         mWriter.Flush();
     }
 
+    void SendPacket_Bone(ICPacket packetStruct)
+    {
+        
+        SendPacketQueue.Enqueue(packetStruct);
+    }
+
+    void writefloat(float[] values, BinaryWriter writer)
+    {
+        for (int i = 0; i < values.Length; i++)
+        {
+            writer.Write(values[i]);
+        }
+    }
+
     private void ProcessSendPackets()
     {
         Debug.Log("Processing thread started.");
@@ -165,23 +151,45 @@ public class ICNetworkManager : MonoBehaviour
                     BinaryWriter writer = new BinaryWriter(ms);
 
                     // Header First
+                    // Convert UID to network byte order (big endian)
                     //writer.Write(BitConverter.GetBytes(System.Net.IPAddress.HostToNetworkOrder(packet.packetHeader.nID)));
                     writer.Write(packet.packetHeader.nID);
                     writer.Write(packet.packetHeader.nSize);
                     writer.Write(packet.packetHeader.nType);
                     writer.Write(packet.packetHeader.nCheckSum);
-                    // Convert UID to network byte order (big endian)
+
                     writer.Write(packet.UID);
 
                     // Write positions and rotations
-                    foreach (float position in packet.positions)
-                    {
-                        writer.Write(position);
-                    }
-                    foreach (float rotation in packet.rotations)
-                    {
-                        writer.Write(rotation);
-                    }
+                    // Body
+                    writefloat(packet.headPosition, writer);
+                    writefloat(packet.headRotation, writer);
+                    writefloat(packet.neckPosition, writer);
+                    writefloat(packet.neckRotation, writer);
+                    writefloat(packet.chestPosition, writer);
+                    writefloat(packet.chestRotation, writer);
+                    writefloat(packet.spinePosition, writer);
+                    writefloat(packet.spineRotation, writer);
+                    writefloat(packet.hipPosition, writer);
+                    writefloat(packet.hipRotation, writer);
+                    // HAND
+                    writefloat(packet.leftUpperArmPosition, writer);
+                    writefloat(packet.leftUpperArmRotation, writer);
+                    writefloat(packet.leftLowerArmPosition, writer);
+                    writefloat(packet.leftLowerArmRotation, writer);
+                    writefloat(packet.leftHandPosition, writer);
+                    writefloat(packet.leftHandRotation, writer);
+                    writefloat(packet.rightUpperArmPosition, writer);
+                    writefloat(packet.rightUpperArmRotation, writer);
+                    writefloat(packet.rightLowerArmPosition, writer);
+                    writefloat(packet.rightLowerArmRotation, writer);
+                    writefloat(packet.rightHandPosition, writer);
+                    writefloat(packet.rightHandRotation, writer);
+                    // FOOT
+                    writefloat(packet.leftFootPosition, writer);
+                    writefloat(packet.leftFootRotation, writer);
+                    writefloat(packet.rightHandPosition, writer);
+                    writefloat(packet.rightHandRotation, writer);
 
                     byte[] data = ms.ToArray();
                     packet.SetMotionProtocol(data.Length);
@@ -192,16 +200,39 @@ public class ICNetworkManager : MonoBehaviour
                     writer.Write(packet.packetHeader.nSize);
                     writer.Write(packet.packetHeader.nType);
                     writer.Write(packet.packetHeader.nCheckSum);
+
                     writer.Write(packet.UID);
+
                     // Write positions and rotations
-                    foreach (float position in packet.positions)
-                    {
-                        writer.Write(position);
-                    }
-                    foreach (float rotation in packet.rotations)
-                    {
-                        writer.Write(rotation);
-                    }
+                    // Body
+                    writefloat(packet.headPosition, writer);
+                    writefloat(packet.headRotation, writer);
+                    writefloat(packet.neckPosition, writer);
+                    writefloat(packet.neckRotation, writer);
+                    writefloat(packet.chestPosition, writer);
+                    writefloat(packet.chestRotation, writer);
+                    writefloat(packet.spinePosition, writer);
+                    writefloat(packet.spineRotation, writer);
+                    writefloat(packet.hipPosition, writer);
+                    writefloat(packet.hipRotation, writer);
+                    // HAND
+                    writefloat(packet.leftUpperArmPosition, writer);
+                    writefloat(packet.leftUpperArmRotation, writer);
+                    writefloat(packet.leftLowerArmPosition, writer);
+                    writefloat(packet.leftLowerArmRotation, writer);
+                    writefloat(packet.leftHandPosition, writer);
+                    writefloat(packet.leftHandRotation, writer);
+                    writefloat(packet.rightUpperArmPosition, writer);
+                    writefloat(packet.rightUpperArmRotation, writer);
+                    writefloat(packet.rightLowerArmPosition, writer);
+                    writefloat(packet.rightLowerArmRotation, writer);
+                    writefloat(packet.rightHandPosition, writer);
+                    writefloat(packet.rightHandRotation, writer);
+                    // FOOT
+                    writefloat(packet.leftFootPosition, writer);
+                    writefloat(packet.leftFootRotation, writer);
+                    writefloat(packet.rightHandPosition, writer);
+                    writefloat(packet.rightHandRotation, writer);
 
                     byte[] finalData = ms.ToArray();
 

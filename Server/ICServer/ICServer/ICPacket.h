@@ -35,7 +35,7 @@ struct stLoginAck : public stHeader
 
 struct stBoneData : public stHeader
 {
-	uint16 UID;
+	uint32 UID;
 	float v[3][13];
 	float q[4][13];
 

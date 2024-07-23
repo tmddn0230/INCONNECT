@@ -98,6 +98,42 @@ public struct CoreBoneData
     public float[] leftFootRotation;
     public float[] rightFootPosition;
     public float[] rightFootRotation;
+
+    public void Init()
+    {
+      // Body : 5
+      headPosition = new float[3];
+      headRotation = new float[4];
+      neckPosition = new float[3];
+      neckRotation = new float[4];
+      chestPosition = new float[3];
+      chestRotation = new float[4];
+      spinePosition = new float[3];
+      spineRotation = new float[4];
+      hipPosition = new float[3];
+      hipRotation = new float[4];
+
+
+      // Hand : 6
+      leftUpperArmPosition = new float[3];
+      leftUpperArmRotation = new float[4];
+      leftLowerArmPosition = new float[3];
+      leftLowerArmRotation = new float[4];
+      leftHandPosition = new float[3];
+      leftHandRotation = new float[4];
+      rightUpperArmPosition = new float[3];
+      rightUpperArmRotation = new float[4];
+      rightLowerArmPosition = new float[3];
+      rightLowerArmRotation = new float[4];
+      rightHandPosition = new float[3];
+      rightHandRotation = new float[4];
+      
+      // Leg : 2
+      leftFootPosition = new float[3];
+      leftFootRotation = new float[4];
+      rightFootPosition = new float[3];
+      rightFootRotation = new float[4];
+    }
 }
 
 

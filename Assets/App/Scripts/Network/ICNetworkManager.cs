@@ -133,6 +133,18 @@ public class ICNetworkManager : MonoBehaviour
         }
     }
 
+    float[] readfloat(float[] values, BinaryReader reader)
+    {
+        values = new float[values.Length];
+
+        for(int i = 0; i < values.Length; i++)
+        {
+            values[i] = reader.ReadSingle();
+        }
+        return values;
+    }
+
+
     private void ProcessSendPackets()
     {
         Debug.Log("Processing thread started.");
@@ -283,22 +295,55 @@ public class ICNetworkManager : MonoBehaviour
                 BinaryReader reader = new BinaryReader(ms);
 
                 // UID 읽기
-                long UID = reader.ReadInt64();
+                int UID = reader.ReadInt32();
 
                 // positions 및 rotations 읽기
-                int numElements = (totalSize - sizeof(long)) / (sizeof(float) * 2);
-                float[] positions = new float[numElements];
-                float[] rotations = new float[numElements];
+                CoreBoneData coreBoneData = new CoreBoneData();
+                coreBoneData.Init();
+                // Body
+                coreBoneData.headPosition = readfloat(coreBoneData.headPosition, reader);
+                coreBoneData.headRotation = readfloat(coreBoneData.headRotation, reader);
+                coreBoneData.neckPosition = readfloat(coreBoneData.neckPosition, reader);
+                coreBoneData.neckRotation = readfloat(coreBoneData.neckRotation, reader);
+                coreBoneData.chestPosition = readfloat(coreBoneData.chestPosition, reader);
+                coreBoneData.chestRotation = readfloat(coreBoneData.chestRotation, reader);
+                coreBoneData.spinePosition = readfloat(coreBoneData.spinePosition, reader);
+                coreBoneData.spineRotation = readfloat(coreBoneData.spineRotation, reader);
+                coreBoneData.hipPosition = readfloat(coreBoneData.hipPosition, reader);
+                coreBoneData.hipRotation = readfloat(coreBoneData.hipRotation, reader);
 
-                for (int i = 0; i < numElements; i++)
+                // Hands
+                coreBoneData.leftUpperArmPosition = readfloat(coreBoneData.leftUpperArmPosition, reader);
+                coreBoneData.leftUpperArmRotation = readfloat(coreBoneData.leftUpperArmRotation, reader);
+                coreBoneData.leftLowerArmPosition = readfloat(coreBoneData.leftLowerArmPosition, reader);
+                coreBoneData.leftLowerArmRotation = readfloat(coreBoneData.leftLowerArmRotation, reader);
+                coreBoneData.leftHandPosition = readfloat(coreBoneData.leftHandPosition, reader);
+                coreBoneData.leftHandRotation = readfloat(coreBoneData.leftHandRotation, reader);
+                coreBoneData.rightUpperArmPosition = readfloat(coreBoneData.rightUpperArmPosition, reader);
+                coreBoneData.rightUpperArmRotation = readfloat(coreBoneData.rightUpperArmRotation, reader);
+                coreBoneData.rightLowerArmPosition = readfloat(coreBoneData.rightLowerArmPosition, reader);
+                coreBoneData.rightLowerArmRotation = readfloat(coreBoneData.rightLowerArmRotation, reader);
+                coreBoneData.rightHandPosition = readfloat(coreBoneData.rightHandPosition, reader);
+                coreBoneData.rightHandRotation = readfloat(coreBoneData.rightHandRotation, reader);
+
+                // Foots
+                coreBoneData.leftFootPosition = readfloat(coreBoneData.leftFootPosition, reader);
+                coreBoneData.leftFootRotation = readfloat(coreBoneData.leftFootRotation, reader);
+                coreBoneData.rightFootPosition = readfloat(coreBoneData.rightFootPosition, reader);
+                coreBoneData.rightFootRotation = readfloat(coreBoneData.rightFootRotation, reader);
+
+
+
+
+                float[] positions = new float[13];
+                float[] rotations = new float[13];
+
+                for (int i = 0; i < 13; i++)
                 {
                     positions[i] = reader.ReadSingle();
-                }
-
-                for (int i = 0; i < numElements; i++)
-                {
                     rotations[i] = reader.ReadSingle();
                 }
+
 
                 //// 패킷 생성
                 //Packet packet = new Packet

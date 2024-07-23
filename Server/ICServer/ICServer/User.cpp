@@ -227,6 +227,7 @@ void User::Parse(int protocol, char* packet)
 
 void User::RecvLoginReq(char* packet)
 {
+
 }
 
 void User::RecvBoneData(char* packet)

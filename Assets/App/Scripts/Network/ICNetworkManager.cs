@@ -41,10 +41,8 @@ public class ICNetworkManager : MonoBehaviour
     object queueLock = new object();
 
     // Receiver
-
-    //packetStruct
-    public Vector3[] positions;
-    public Quaternion[] rotations;
+    ICPacketReciever packetReciever;
+    ICMotionReciever motionReciever;
 
     public void ConnectToServer()
     {
@@ -68,6 +66,10 @@ public class ICNetworkManager : MonoBehaviour
 
             bRun = true;
             bSocketReady = true;
+
+            // Receiver
+            motionReciever = new ICMotionReciever();
+            motionReciever.Init();
         }
         catch(Exception e)
         {
@@ -121,7 +123,6 @@ public class ICNetworkManager : MonoBehaviour
 
     void SendPacket_Bone(ICPacket packetStruct)
     {
-        
         SendPacketQueue.Enqueue(packetStruct);
     }
 
@@ -297,67 +298,45 @@ public class ICNetworkManager : MonoBehaviour
                 // UID 읽기
                 int UID = reader.ReadInt32();
 
-                // positions 및 rotations 읽기
-                CoreBoneData coreBoneData = new CoreBoneData();
-                coreBoneData.Init();
+                ICPacket recvpacket = new ICPacket();
+                // Set Header
+                recvpacket.packetHeader = header;
+                // Set UID
+                recvpacket.UID = UID;
+                // positions 및 rotations 읽기 & Set
                 // Body
-                coreBoneData.headPosition = readfloat(coreBoneData.headPosition, reader);
-                coreBoneData.headRotation = readfloat(coreBoneData.headRotation, reader);
-                coreBoneData.neckPosition = readfloat(coreBoneData.neckPosition, reader);
-                coreBoneData.neckRotation = readfloat(coreBoneData.neckRotation, reader);
-                coreBoneData.chestPosition = readfloat(coreBoneData.chestPosition, reader);
-                coreBoneData.chestRotation = readfloat(coreBoneData.chestRotation, reader);
-                coreBoneData.spinePosition = readfloat(coreBoneData.spinePosition, reader);
-                coreBoneData.spineRotation = readfloat(coreBoneData.spineRotation, reader);
-                coreBoneData.hipPosition = readfloat(coreBoneData.hipPosition, reader);
-                coreBoneData.hipRotation = readfloat(coreBoneData.hipRotation, reader);
+                recvpacket.headPosition = readfloat(recvpacket.headPosition, reader);
+                recvpacket.headRotation = readfloat(recvpacket.headRotation, reader);
+                recvpacket.neckPosition = readfloat(recvpacket.neckPosition, reader);
+                recvpacket.neckRotation = readfloat(recvpacket.neckRotation, reader);
+                recvpacket.chestPosition = readfloat(recvpacket.chestPosition, reader);
+                recvpacket.chestRotation = readfloat(recvpacket.chestRotation, reader);
+                recvpacket.spinePosition = readfloat(recvpacket.spinePosition, reader);
+                recvpacket.spineRotation = readfloat(recvpacket.spineRotation, reader);
+                recvpacket.hipPosition = readfloat(recvpacket.hipPosition, reader);
+                recvpacket.hipRotation = readfloat(recvpacket.hipRotation, reader);
 
                 // Hands
-                coreBoneData.leftUpperArmPosition = readfloat(coreBoneData.leftUpperArmPosition, reader);
-                coreBoneData.leftUpperArmRotation = readfloat(coreBoneData.leftUpperArmRotation, reader);
-                coreBoneData.leftLowerArmPosition = readfloat(coreBoneData.leftLowerArmPosition, reader);
-                coreBoneData.leftLowerArmRotation = readfloat(coreBoneData.leftLowerArmRotation, reader);
-                coreBoneData.leftHandPosition = readfloat(coreBoneData.leftHandPosition, reader);
-                coreBoneData.leftHandRotation = readfloat(coreBoneData.leftHandRotation, reader);
-                coreBoneData.rightUpperArmPosition = readfloat(coreBoneData.rightUpperArmPosition, reader);
-                coreBoneData.rightUpperArmRotation = readfloat(coreBoneData.rightUpperArmRotation, reader);
-                coreBoneData.rightLowerArmPosition = readfloat(coreBoneData.rightLowerArmPosition, reader);
-                coreBoneData.rightLowerArmRotation = readfloat(coreBoneData.rightLowerArmRotation, reader);
-                coreBoneData.rightHandPosition = readfloat(coreBoneData.rightHandPosition, reader);
-                coreBoneData.rightHandRotation = readfloat(coreBoneData.rightHandRotation, reader);
+                recvpacket.leftUpperArmPosition = readfloat(recvpacket.leftUpperArmPosition, reader);
+                recvpacket.leftUpperArmRotation = readfloat(recvpacket.leftUpperArmRotation, reader);
+                recvpacket.leftLowerArmPosition = readfloat(recvpacket.leftLowerArmPosition, reader);
+                recvpacket.leftLowerArmRotation = readfloat(recvpacket.leftLowerArmRotation, reader);
+                recvpacket.leftHandPosition = readfloat(recvpacket.leftHandPosition, reader);
+                recvpacket.leftHandRotation = readfloat(recvpacket.leftHandRotation, reader);
+                recvpacket.rightUpperArmPosition = readfloat(recvpacket.rightUpperArmPosition, reader);
+                recvpacket.rightUpperArmRotation = readfloat(recvpacket.rightUpperArmRotation, reader);
+                recvpacket.rightLowerArmPosition = readfloat(recvpacket.rightLowerArmPosition, reader);
+                recvpacket.rightLowerArmRotation = readfloat(recvpacket.rightLowerArmRotation, reader);
+                recvpacket.rightHandPosition = readfloat(recvpacket.rightHandPosition, reader);
+                recvpacket.rightHandRotation = readfloat(recvpacket.rightHandRotation, reader);
 
                 // Foots
-                coreBoneData.leftFootPosition = readfloat(coreBoneData.leftFootPosition, reader);
-                coreBoneData.leftFootRotation = readfloat(coreBoneData.leftFootRotation, reader);
-                coreBoneData.rightFootPosition = readfloat(coreBoneData.rightFootPosition, reader);
-                coreBoneData.rightFootRotation = readfloat(coreBoneData.rightFootRotation, reader);
+                recvpacket.leftFootPosition = readfloat(recvpacket.leftFootPosition, reader);
+                recvpacket.leftFootRotation = readfloat(recvpacket.leftFootRotation, reader);
+                recvpacket.rightFootPosition = readfloat(recvpacket.rightFootPosition, reader);
+                recvpacket.rightFootRotation = readfloat(recvpacket.rightFootRotation, reader);
 
-
-
-
-                float[] positions = new float[13];
-                float[] rotations = new float[13];
-
-                for (int i = 0; i < 13; i++)
-                {
-                    positions[i] = reader.ReadSingle();
-                    rotations[i] = reader.ReadSingle();
-                }
-
-
-                //// 패킷 생성
-                //Packet packet = new Packet
-                //{
-                //    packetHeader = header,
-                //    UID = UID,
-                //    positions = positions,
-                //    rotations = rotations
-                //};
-                //
-                //lock (packetQueue)
-                //{
-                //    packetQueue.Enqueue(packet);
-                //}
+                motionReciever.AddPacketQueue(recvpacket);
             }
         }
         catch (Exception e)

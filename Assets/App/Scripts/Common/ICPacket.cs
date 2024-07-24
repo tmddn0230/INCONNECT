@@ -87,7 +87,6 @@ namespace Packet
         }
 
         // Dummy Make Bone Func
-
         public void MakeBone()
         {
             headPosition = new float[] {0, 0, 0};
@@ -122,86 +121,6 @@ namespace Packet
             rightFootPosition = new float[] { 1, 1, 2 };
             rightFootRotation = new float[] { 1, 2, 2, 1 };
         }
-
-
-        // 제거예정
-        //public ICPacket(int uid, Vector3[] vec, Quaternion[] quat)
-        //{
-        //    UID = uid;
-        //    positions = new float[vec.Length * 3];
-        //    rotations = new float[quat.Length * 4];
-        //
-        //    for (int i = 0; i < vec.Length; i++)
-        //    {
-        //        positions[i * 3] = vec[i].x;
-        //        positions[i * 3 + 1] = vec[i].y;
-        //        positions[i * 3 + 2] = vec[i].z;
-        //    }
-        //
-        //    for (int i = 0; i < quat.Length; i++)
-        //    {
-        //        rotations[i * 4] = quat[i].x;
-        //        rotations[i * 4 + 1] = quat[i].y;
-        //        rotations[i * 4 + 2] = quat[i].z;
-        //        rotations[i * 4 + 3] = quat[i].w;
-        //    }
-        //}
-        //
-        //public ICPacket(int uid, float[] pos, float[] quat)
-        //{
-        //    UID = uid;
-        //    for (int i = 0; i < pos.Length; i++)
-        //    {
-        //        positions[i] = pos[i]; 
-        //    }
-        //
-        //    for (int j = 0; j < quat.Length; j++)
-        //    {
-        //        rotations[j] = quat[j];
-        //    }
-        //}
-
-        //public Vector3[] GetPositions()
-        //{
-        //    Vector3[] vec = new Vector3[positions.Length / 3];
-        //    for (int i = 0; i < positions.Length; i++)
-        //    {
-        //        vec[i] = new Vector3(positions[i * 3], positions[i * 3 + 1], positions[i * 3 + 2]);
-        //    }
-        //    return vec;
-        //}
-        //
-        //public void SetPositions(Vector3[] vec)
-        //{
-        //    for (int i = 0; i < vec.Length; i++)
-        //    {
-        //        positions[i * 3] = vec[i].x;
-        //        positions[i * 3 + 1] = vec[i].y;
-        //        positions[i * 3 + 2] = vec[i].z;
-        //    }
-        //}
-        //
-        //
-        //public Quaternion[] GetRotations()
-        //{
-        //    Quaternion[] quat = new Quaternion[rotations.Length / 4];
-        //    for (int i = 0; i < rotations.Length; i++)
-        //    {
-        //        quat[i] = new Quaternion(rotations[i * 4], rotations[i * 4 + 1], rotations[i * 4 + 2], rotations[i * 4 + 3]);
-        //    }
-        //    return quat;
-        //}
-        //
-        //public void SetRotations(Quaternion[] quat)
-        //{
-        //    for (int i = 0; i < quat.Length; i++)
-        //    {
-        //        rotations[i * 4] = quat[i].x;
-        //        rotations[i * 4 + 1] = quat[i].y;
-        //        rotations[i * 4 + 2] = quat[i].z;
-        //        rotations[i * 4 + 3] = quat[i].w;
-        //    }
-        //}
     }
 
     public class ICPacketQueue

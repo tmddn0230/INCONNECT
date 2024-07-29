@@ -131,6 +131,9 @@
     <ClCompile Include="stdafx.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="ICCore.h" />
+    <ClInclude Include="ICPacket.h" />
+    <ClInclude Include="ICProtocol.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

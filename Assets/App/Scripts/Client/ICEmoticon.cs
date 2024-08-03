@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.U2D;
 using UnityEngine;
 using static UnityEngine.UI.ScrollRect;
 
@@ -8,7 +9,10 @@ public class ICEmoticon : MonoBehaviour
     public float Movespeed = 0.1f; // 오브젝트 이동 속도
     public float movementDistance = 1f; // 양옆으로 움직일 거리
 
+
     private Material mat;
+    
+    
     private void Start()
     {
         mat = GetComponent<Renderer>().material;
@@ -19,19 +23,16 @@ public class ICEmoticon : MonoBehaviour
     }
 
     // path = 리소스 파일 이름 전부 넣기 ~~~.png / ~~.jpg등..
-    public void DefalutEmoAnim(string path) 
+    public void DefalutEmoAnim(Sprite emotion) 
     {
-        StartCoroutine(MoveForward(path));
+        StartCoroutine(MoveForward(emotion));
     }
-    IEnumerator MoveForward(string path)
+    IEnumerator MoveForward(Sprite emotion)
     {
-        //string SpritePath = "Textures/" + path;
 
         transform.position = new Vector3(0f,1.9f,0f);
 
-        Sprite newSprite = Resources.Load<Sprite>(path);
-
-        Texture2D newAlbedoTexture = newSprite.texture;
+        Texture2D newAlbedoTexture = emotion.texture;
        
         mat.SetTexture("_MainTex", newAlbedoTexture);
 

@@ -13,6 +13,7 @@ class testmain
         UdpClient sendClient = new UdpClient();
         UdpClient receiveClient = new UdpClient(ReceivePort);
 
+        //IPAddress.Loopback 을 서버 실재 ip로변경할수있다
         IPEndPoint sendEndPoint = new IPEndPoint(IPAddress.Loopback, SendPort);
         IPEndPoint receiveEndPoint = new IPEndPoint(IPAddress.Any, ReceivePort);
 

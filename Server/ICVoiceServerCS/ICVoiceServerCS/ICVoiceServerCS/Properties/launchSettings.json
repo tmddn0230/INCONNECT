@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ICVoiceServerCS": {
+      "commandName": "Project",
+      "workingDirectory": "$(ProjectDir)"
+    }
+  }
+}

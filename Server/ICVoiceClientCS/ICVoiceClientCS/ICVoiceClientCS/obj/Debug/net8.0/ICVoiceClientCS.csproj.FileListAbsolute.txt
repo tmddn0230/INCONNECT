@@ -21,3 +21,4 @@ C:\Users\chan\Documents\GitHub\INCONNECT\Server\ICVoiceClientCS\ICVoiceClientCS\
 C:\Users\chan\Documents\GitHub\INCONNECT\Server\ICVoiceClientCS\ICVoiceClientCS\ICVoiceClientCS\obj\Debug\net8.0\ICVoiceClientCS.pdb
 C:\Users\chan\Documents\GitHub\INCONNECT\Server\ICVoiceClientCS\ICVoiceClientCS\ICVoiceClientCS\obj\Debug\net8.0\ICVoiceClientCS.genruntimeconfig.cache
 C:\Users\chan\Documents\GitHub\INCONNECT\Server\ICVoiceClientCS\ICVoiceClientCS\ICVoiceClientCS\obj\Debug\net8.0\ref\ICVoiceClientCS.dll
+C:\Users\chan\Documents\GitHub\INCONNECT\Server\ICVoiceClientCS\ICVoiceClientCS\ICVoiceClientCS\bin\Debug\net8.0\INIFileParser.dll

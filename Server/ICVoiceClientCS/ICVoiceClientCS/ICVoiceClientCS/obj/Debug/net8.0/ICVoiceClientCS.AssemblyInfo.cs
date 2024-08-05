@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ICVoiceClientCS")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+9941315ed789f1f4f29d5fcaa81313188a278d27")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+d2c0edc191ba5f242f714c35c654d49efcd36b92")]
 [assembly: System.Reflection.AssemblyProductAttribute("ICVoiceClientCS")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ICVoiceClientCS")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -42,6 +42,7 @@ public class ICMotionReciever
 
     void ProcessRecvPackets()
     {
+        /*
         Debug.Log("Processing thread started.");
         while (bRun)
         {
@@ -49,7 +50,7 @@ public class ICMotionReciever
 
             if (RecvPacketQueue == null) continue;
 
-            ICPacket packet = RecvPacketQueue.Dequeue();
+            ICPacket_Bone packet = RecvPacketQueue.Dequeue();
             if (packet != null)
             {
                 // positions ¹× rotations ÀÐ±â
@@ -94,11 +95,12 @@ public class ICMotionReciever
 
             Thread.Sleep(10);
         }
+        */
     }
 
-    public void AddPacketQueue(ICPacket packet)
+    public void AddPacketQueue(ICPacket_Bone packet)
     {
-        RecvPacketQueue.Enqueue(packet);
+       // RecvPacketQueue.Enqueue(packet);
     }
 
     void Parse(Int32 UID)

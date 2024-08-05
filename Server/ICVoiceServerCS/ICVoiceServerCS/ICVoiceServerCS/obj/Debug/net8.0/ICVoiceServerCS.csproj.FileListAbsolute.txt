@@ -1,0 +1,15 @@
+C:\Users\chan\Documents\GitHub\INCONNECT\Server\ICVoiceServerCS\ICVoiceServerCS\ICVoiceServerCS\bin\Debug\net8.0\ICVoiceServerCS.exe
+C:\Users\chan\Documents\GitHub\INCONNECT\Server\ICVoiceServerCS\ICVoiceServerCS\ICVoiceServerCS\bin\Debug\net8.0\ICVoiceServerCS.deps.json
+C:\Users\chan\Documents\GitHub\INCONNECT\Server\ICVoiceServerCS\ICVoiceServerCS\ICVoiceServerCS\bin\Debug\net8.0\ICVoiceServerCS.runtimeconfig.json
+C:\Users\chan\Documents\GitHub\INCONNECT\Server\ICVoiceServerCS\ICVoiceServerCS\ICVoiceServerCS\bin\Debug\net8.0\ICVoiceServerCS.dll
+C:\Users\chan\Documents\GitHub\INCONNECT\Server\ICVoiceServerCS\ICVoiceServerCS\ICVoiceServerCS\bin\Debug\net8.0\ICVoiceServerCS.pdb
+C:\Users\chan\Documents\GitHub\INCONNECT\Server\ICVoiceServerCS\ICVoiceServerCS\ICVoiceServerCS\obj\Debug\net8.0\ICVoiceServerCS.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\chan\Documents\GitHub\INCONNECT\Server\ICVoiceServerCS\ICVoiceServerCS\ICVoiceServerCS\obj\Debug\net8.0\ICVoiceServerCS.AssemblyInfoInputs.cache
+C:\Users\chan\Documents\GitHub\INCONNECT\Server\ICVoiceServerCS\ICVoiceServerCS\ICVoiceServerCS\obj\Debug\net8.0\ICVoiceServerCS.AssemblyInfo.cs
+C:\Users\chan\Documents\GitHub\INCONNECT\Server\ICVoiceServerCS\ICVoiceServerCS\ICVoiceServerCS\obj\Debug\net8.0\ICVoiceServerCS.csproj.CoreCompileInputs.cache
+C:\Users\chan\Documents\GitHub\INCONNECT\Server\ICVoiceServerCS\ICVoiceServerCS\ICVoiceServerCS\obj\Debug\net8.0\ICVoiceServerCS.sourcelink.json
+C:\Users\chan\Documents\GitHub\INCONNECT\Server\ICVoiceServerCS\ICVoiceServerCS\ICVoiceServerCS\obj\Debug\net8.0\ICVoiceServerCS.dll
+C:\Users\chan\Documents\GitHub\INCONNECT\Server\ICVoiceServerCS\ICVoiceServerCS\ICVoiceServerCS\obj\Debug\net8.0\refint\ICVoiceServerCS.dll
+C:\Users\chan\Documents\GitHub\INCONNECT\Server\ICVoiceServerCS\ICVoiceServerCS\ICVoiceServerCS\obj\Debug\net8.0\ICVoiceServerCS.pdb
+C:\Users\chan\Documents\GitHub\INCONNECT\Server\ICVoiceServerCS\ICVoiceServerCS\ICVoiceServerCS\obj\Debug\net8.0\ICVoiceServerCS.genruntimeconfig.cache
+C:\Users\chan\Documents\GitHub\INCONNECT\Server\ICVoiceServerCS\ICVoiceServerCS\ICVoiceServerCS\obj\Debug\net8.0\ref\ICVoiceServerCS.dll

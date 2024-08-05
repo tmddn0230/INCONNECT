@@ -27,6 +27,16 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance,
 
     // TODO: Place code here.
 
+    UDPServer server;
+
+    if (!server.Initialize())
+    {
+        std::cerr << "Failed to initialize the server." << std::endl;
+        return 1;
+    }
+
+    server.StartListening();
+    server.Cleanup();
 
 
 

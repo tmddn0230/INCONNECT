@@ -123,6 +123,20 @@ namespace Packet
         }
     }
 
+    public class ICPacket_Login
+    {
+        public StHeader packetHeader;
+
+        public int UID;
+        public int Result;
+
+        public void SetLoginProtocol(int len)
+        {
+            packetHeader = new StHeader();
+            packetHeader.SetHeader((int)enProtocol.prLoginReq, len);
+        }
+    }
+
     public class ICPacketQueue
     {
         private Queue<ICPacket> queue;

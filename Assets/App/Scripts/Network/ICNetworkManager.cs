@@ -17,6 +17,7 @@ using System.Runtime.InteropServices;
 using UnityEditor.Sprites;
 using Unity.VisualScripting;
 using Newtonsoft.Json;
+using UnityEngine.Analytics;
 
 public class ICNetworkManager : MonoBehaviour
 {
@@ -125,6 +126,12 @@ public class ICNetworkManager : MonoBehaviour
     {
         SendPacketQueue.Enqueue(packetStruct);
     }
+
+    void SendPacket_Login(ICPacket packetStruct)
+    {
+        SendPacketQueue.Enqueue(packetStruct);
+    }
+
 
     void writefloat(float[] values, BinaryWriter writer)
     {
@@ -279,8 +286,11 @@ public class ICNetworkManager : MonoBehaviour
 
             // 헤더 정보를 읽어 패킷 크기를 확인합니다
             StHeader header = ByteArrayToStructure<StHeader>(headerBuffer);
-            int totalSize = header.nSize - headerSize;
 
+            // 헤더의 프로토콜에 따라 
+            Parse(header);
+
+            int totalSize = header.nSize - headerSize;
             // 전체 패킷 데이터를 읽습니다
             byte[] buffer = new byte[totalSize];
             bytesRead = mStream.Read(buffer, 0, totalSize);
@@ -352,6 +362,109 @@ public class ICNetworkManager : MonoBehaviour
         T obj = (T)Marshal.PtrToStructure(ptr, typeof(T));
         Marshal.FreeHGlobal(ptr);
         return obj;
+    }
+
+    void Parse(StHeader header)
+    {
+        switch ((enProtocol)header.nID)
+        {
+            case enProtocol.prLoginAck:
+                RecvBoneData(header);
+                break;
+            case enProtocol.prBoneData:
+                RecvLoginAck(header);
+                break;
+            case enProtocol.prENTPORTAL:
+                break;
+
+        }
+    }
+    void RecvLoginAck(StHeader header)
+    {
+        int headerSize = Marshal.SizeOf(typeof(StHeader));
+        int totalSize = header.nSize - headerSize;
+        // 전체 패킷 데이터를 읽습니다
+        byte[] buffer = new byte[totalSize];
+        int bytesRead = mStream.Read(buffer, 0, totalSize);
+
+        if (bytesRead != totalSize)
+        {
+            throw new Exception("Failed to read packet data");
+        }
+
+        // 데이터를 MemoryStream에 저장하고 읽어 들입니다
+        using (MemoryStream ms = new MemoryStream(buffer))
+        {
+            BinaryReader reader = new BinaryReader(ms);
+
+            // UID 읽기
+            int UID = reader.ReadInt32();
+            // Result 읽기
+            int Result = reader.ReadInt32();
+        }
+    }
+
+    void RecvBoneData(StHeader header)
+    {
+        int headerSize = Marshal.SizeOf(typeof(StHeader));
+        int totalSize = header.nSize - headerSize;
+        // 전체 패킷 데이터를 읽습니다
+        byte[] buffer = new byte[totalSize];
+        int bytesRead = mStream.Read(buffer, 0, totalSize);
+
+        if (bytesRead != totalSize)
+        {
+            throw new Exception("Failed to read packet data");
+        }
+
+        // 데이터를 MemoryStream에 저장하고 읽어 들입니다
+        using (MemoryStream ms = new MemoryStream(buffer))
+        {
+            BinaryReader reader = new BinaryReader(ms);
+
+            // UID 읽기
+            int UID = reader.ReadInt32();
+
+            ICPacket recvpacket = new ICPacket();
+            // Set Header
+            recvpacket.packetHeader = header;
+            // Set UID
+            recvpacket.UID = UID;
+            // positions 및 rotations 읽기 & Set
+            // Body
+            recvpacket.headPosition = readfloat(recvpacket.headPosition, reader);
+            recvpacket.headRotation = readfloat(recvpacket.headRotation, reader);
+            recvpacket.neckPosition = readfloat(recvpacket.neckPosition, reader);
+            recvpacket.neckRotation = readfloat(recvpacket.neckRotation, reader);
+            recvpacket.chestPosition = readfloat(recvpacket.chestPosition, reader);
+            recvpacket.chestRotation = readfloat(recvpacket.chestRotation, reader);
+            recvpacket.spinePosition = readfloat(recvpacket.spinePosition, reader);
+            recvpacket.spineRotation = readfloat(recvpacket.spineRotation, reader);
+            recvpacket.hipPosition = readfloat(recvpacket.hipPosition, reader);
+            recvpacket.hipRotation = readfloat(recvpacket.hipRotation, reader);
+
+            // Hands
+            recvpacket.leftUpperArmPosition = readfloat(recvpacket.leftUpperArmPosition, reader);
+            recvpacket.leftUpperArmRotation = readfloat(recvpacket.leftUpperArmRotation, reader);
+            recvpacket.leftLowerArmPosition = readfloat(recvpacket.leftLowerArmPosition, reader);
+            recvpacket.leftLowerArmRotation = readfloat(recvpacket.leftLowerArmRotation, reader);
+            recvpacket.leftHandPosition = readfloat(recvpacket.leftHandPosition, reader);
+            recvpacket.leftHandRotation = readfloat(recvpacket.leftHandRotation, reader);
+            recvpacket.rightUpperArmPosition = readfloat(recvpacket.rightUpperArmPosition, reader);
+            recvpacket.rightUpperArmRotation = readfloat(recvpacket.rightUpperArmRotation, reader);
+            recvpacket.rightLowerArmPosition = readfloat(recvpacket.rightLowerArmPosition, reader);
+            recvpacket.rightLowerArmRotation = readfloat(recvpacket.rightLowerArmRotation, reader);
+            recvpacket.rightHandPosition = readfloat(recvpacket.rightHandPosition, reader);
+            recvpacket.rightHandRotation = readfloat(recvpacket.rightHandRotation, reader);
+
+            // Foots
+            recvpacket.leftFootPosition = readfloat(recvpacket.leftFootPosition, reader);
+            recvpacket.leftFootRotation = readfloat(recvpacket.leftFootRotation, reader);
+            recvpacket.rightFootPosition = readfloat(recvpacket.rightFootPosition, reader);
+            recvpacket.rightFootRotation = readfloat(recvpacket.rightFootRotation, reader);
+
+            motionReciever.AddPacketQueue(recvpacket);
+        }
     }
 
     void OnApplicationQuit()

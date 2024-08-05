@@ -27,6 +27,8 @@ struct stLoginReq : public stHeader
 
 struct stLoginAck : public stHeader
 {
+
+
 	stLoginAck()
 	{
 		SetHeader(prLoginAck, sizeof(stLoginAck));

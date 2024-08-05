@@ -19,18 +19,24 @@ struct stConnectAck : public stHeader
 
 struct stLoginReq : public stHeader
 {
+	int32 UID;
+	int32 Result;
 	stLoginReq()
 	{
+		UID = 0;
+		Result = 0;
 		SetHeader(prLoginReq, sizeof(stLoginReq));
 	};
 };
 
 struct stLoginAck : public stHeader
 {
-
-
+	int32 UID;
+	int32 Result;
 	stLoginAck()
 	{
+		UID = 0;
+		Result = 0;
 		SetHeader(prLoginAck, sizeof(stLoginAck));
 	};
 };

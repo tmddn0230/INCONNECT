@@ -84,7 +84,7 @@ namespace Rokoko.Core
                 // Convert to JSON
                 if (verbose)
                 {
-                    Debug.LogError(this);
+                    //Debug.LogError(this);
                     Debug.Log(coreBoneDataJson);
                 }
 

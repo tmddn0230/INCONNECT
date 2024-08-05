@@ -10,13 +10,10 @@ public class ICEmoticon : MonoBehaviour
     public float movementDistance = 1f; // 양옆으로 움직일 거리
 
 
-    private Material mat;
+    public Material mat;
     
     
-    private void Start()
-    {
-        mat = GetComponent<Renderer>().material;
-    }
+    
     private void OnEnable()
     {
         Invoke("DisableObject", 2f);

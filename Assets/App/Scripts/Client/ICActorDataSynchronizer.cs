@@ -14,15 +14,7 @@ public class ICActorDataSynchronizer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(testUID == 1)
-        {
-            testupdate();
-        }
-        else
-        {
-            testsend();
-        }
-
+  
         if (m_actor == null) return;
 
         m_coreBoneData.hipPosition = GetPositionArray(HumanBodyBones.Hips);
@@ -54,7 +46,17 @@ public class ICActorDataSynchronizer : MonoBehaviour
         m_coreBoneData.rightHandPosition = GetPositionArray(HumanBodyBones.RightHand);
         m_coreBoneData.rightHandRotation = GetRotationArray(HumanBodyBones.RightHand);
         // 실시간으로 데이터를 업데이트합니다.
+        if (testUID == 1)
+        {
+            testupdate();
+            return;
+        }
+        else
+        {
+            testsend();
+        }
         CharacterAnim.Instance?.UpdateCharacter(m_coreBoneData);
+        
     }
     void testsend()
     {

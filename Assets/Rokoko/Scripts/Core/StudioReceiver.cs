@@ -67,7 +67,7 @@ namespace Rokoko.Core
                 string text = Encoding.UTF8.GetString(uncompressed);
                 if (verbose)
                 {
-                    Debug.Log(text);
+                    //Debug.Log(text);
                 }
                 liveFrame_V4 = JsonUtility.FromJson<LiveFrame_v4>(text);
 
@@ -85,7 +85,7 @@ namespace Rokoko.Core
                 if (verbose)
                 {
                     //Debug.LogError(this);
-                    Debug.Log(coreBoneDataJson);
+                    //Debug.Log(coreBoneDataJson);
                 }
 
                 // Use coreBoneDataJson as needed

@@ -12292,7 +12292,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6badee2e35857cf4f90e9e0352902ad1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_actor: {fileID: 0}
+  m_actor: {fileID: 558561811754658828}
+  mNetworkManager: {fileID: 0}
+  testUID: 2
 --- !u!114 &5797701846262066140
 MonoBehaviour:
   m_ObjectHideFlags: 0

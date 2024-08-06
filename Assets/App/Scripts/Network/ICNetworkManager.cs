@@ -55,7 +55,7 @@ public class ICNetworkManager : MonoBehaviour
         if (bSocketReady) return;
 
         // HOST / PORT
-        string ip = "127.0.0.1";
+        string ip = "58.127.66.152";
         int port = 25000;
 
         // Create Socket 
@@ -586,6 +586,12 @@ public class ICNetworkManager : MonoBehaviour
             // Result 읽기
             int Result = reader.ReadInt32();
         }
+
+
+        // uid 가 1이면 남자 스폰 
+        
+        //         2면 여자 스폰
+
     }
 
     void RecvBoneData(StHeader header)
@@ -609,45 +615,45 @@ public class ICNetworkManager : MonoBehaviour
             // UID 읽기
             int UID = reader.ReadInt32();
 
-            //ICPacket recvpacket = new ICPacket();
-            // Set Header
-            //recvpacket.packetHeader = header;
-            // Set UID
-            //recvpacket.UID = UID;
-            // positions 및 rotations 읽기 & Set
-            // Body
-           // recvpacket.headPosition = readfloat(recvpacket.headPosition, reader);
-           // recvpacket.headRotation = readfloat(recvpacket.headRotation, reader);
-           // recvpacket.neckPosition = readfloat(recvpacket.neckPosition, reader);
-           // recvpacket.neckRotation = readfloat(recvpacket.neckRotation, reader);
-           // recvpacket.chestPosition = readfloat(recvpacket.chestPosition, reader);
-           // recvpacket.chestRotation = readfloat(recvpacket.chestRotation, reader);
-           // recvpacket.spinePosition = readfloat(recvpacket.spinePosition, reader);
-           // recvpacket.spineRotation = readfloat(recvpacket.spineRotation, reader);
-           // recvpacket.hipPosition = readfloat(recvpacket.hipPosition, reader);
-           // recvpacket.hipRotation = readfloat(recvpacket.hipRotation, reader);
-           //
-           // // Hands
-           // recvpacket.leftUpperArmPosition = readfloat(recvpacket.leftUpperArmPosition, reader);
-           // recvpacket.leftUpperArmRotation = readfloat(recvpacket.leftUpperArmRotation, reader);
-           // recvpacket.leftLowerArmPosition = readfloat(recvpacket.leftLowerArmPosition, reader);
-           // recvpacket.leftLowerArmRotation = readfloat(recvpacket.leftLowerArmRotation, reader);
-           // recvpacket.leftHandPosition = readfloat(recvpacket.leftHandPosition, reader);
-           // recvpacket.leftHandRotation = readfloat(recvpacket.leftHandRotation, reader);
-           // recvpacket.rightUpperArmPosition = readfloat(recvpacket.rightUpperArmPosition, reader);
-           // recvpacket.rightUpperArmRotation = readfloat(recvpacket.rightUpperArmRotation, reader);
-           // recvpacket.rightLowerArmPosition = readfloat(recvpacket.rightLowerArmPosition, reader);
-           // recvpacket.rightLowerArmRotation = readfloat(recvpacket.rightLowerArmRotation, reader);
-           // recvpacket.rightHandPosition = readfloat(recvpacket.rightHandPosition, reader);
-           // recvpacket.rightHandRotation = readfloat(recvpacket.rightHandRotation, reader);
-           //
-           // // Foots
-           // recvpacket.leftFootPosition = readfloat(recvpacket.leftFootPosition, reader);
-           // recvpacket.leftFootRotation = readfloat(recvpacket.leftFootRotation, reader);
-           // recvpacket.rightFootPosition = readfloat(recvpacket.rightFootPosition, reader);
-           // recvpacket.rightFootRotation = readfloat(recvpacket.rightFootRotation, reader);
+            CoreBoneData bonepacket = new CoreBoneData();
+            
+            bonepacket.headPosition = readfloat(bonepacket.headPosition, reader);
+            bonepacket.headRotation = readfloat(bonepacket.headRotation, reader);
+            bonepacket.neckPosition = readfloat(bonepacket.neckPosition, reader);
+            bonepacket.neckRotation = readfloat(bonepacket.neckRotation, reader);
+            bonepacket.chestPosition = readfloat(bonepacket.chestPosition, reader);
+            bonepacket.chestRotation = readfloat(bonepacket.chestRotation, reader);
+            bonepacket.spinePosition = readfloat(bonepacket.spinePosition, reader);
+            bonepacket.spineRotation = readfloat(bonepacket.spineRotation, reader);
+            bonepacket.hipPosition = readfloat(bonepacket.hipPosition, reader);
+            bonepacket.hipRotation = readfloat(bonepacket.hipRotation, reader);
+                       // Hands
+            bonepacket.leftUpperArmPosition = readfloat(bonepacket.leftUpperArmPosition, reader);
+            bonepacket.leftUpperArmRotation = readfloat(bonepacket.leftUpperArmRotation, reader);
+            bonepacket.leftLowerArmPosition = readfloat(bonepacket.leftLowerArmPosition, reader);
+            bonepacket.leftLowerArmRotation = readfloat(bonepacket.leftLowerArmRotation, reader);
+            bonepacket.leftHandPosition = readfloat(bonepacket.leftHandPosition, reader);
+            bonepacket.leftHandRotation = readfloat(bonepacket.leftHandRotation, reader);
+            bonepacket.rightUpperArmPosition = readfloat(bonepacket.rightUpperArmPosition, reader);
+            bonepacket.rightUpperArmRotation = readfloat(bonepacket.rightUpperArmRotation, reader);
+            bonepacket.rightLowerArmPosition = readfloat(bonepacket.rightLowerArmPosition, reader);
+            bonepacket.rightLowerArmRotation = readfloat(bonepacket.rightLowerArmRotation, reader);
+            bonepacket.rightHandPosition = readfloat(bonepacket.rightHandPosition, reader);
+            bonepacket.rightHandRotation = readfloat(bonepacket.rightHandRotation, reader);
+                       // Foots
+            bonepacket.leftFootPosition = readfloat(bonepacket.leftFootPosition, reader);
+            bonepacket.leftFootRotation = readfloat(bonepacket.leftFootRotation, reader);
+            bonepacket.rightFootPosition = readfloat(bonepacket.rightFootPosition, reader);
+            bonepacket.rightFootRotation = readfloat(bonepacket.rightFootRotation, reader);
 
-           // motionReciever.AddPacketQueue(recvpacket);
+
+            //ICPacket_Bone recvBoneData;
+            //recvBoneData.packetHeader = header;
+            //recvBoneData.UID = UID;
+            //recvBoneData.bonedata = bonepacket;
+
+            //motionReciever.AddPacketQueue(recvBoneData);
+            motionReciever.AddDictionary(UID, bonepacket);
         }
     }
 

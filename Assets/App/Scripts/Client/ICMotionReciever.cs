@@ -30,6 +30,9 @@ public class ICMotionReciever
     bool bRun = false;
     object queueLock = new object();
 
+    // Dic ¹æ½Ä
+    Dictionary<int, CoreBoneData> MotionDic = new Dictionary<int, CoreBoneData>();
+
     public void Init()
     {
         recvThread = new Thread(ProcessRecvPackets);
@@ -39,6 +42,10 @@ public class ICMotionReciever
         bRun = true;
     }
 
+    public void AddDictionary(int uid, CoreBoneData core)
+    {
+        MotionDic.Add(uid, core);
+    }
 
     void ProcessRecvPackets()
     {

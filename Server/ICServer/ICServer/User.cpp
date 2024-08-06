@@ -217,7 +217,11 @@ void User::Parse(int protocol, char* packet)
 	{
 	case prLoginReq:	RecvLoginReq(packet);	break;
 	case prBoneData:	RecvBoneData(packet);	break;
-   
+	case prTransform:   RecvTransPos(packet);   break;
+	case prMatchingReq: RecvMatchReq(packet);   break;
+	case prFirstAttract:RecvFirstAtr(packet);   break;
+	case prMBTI:        RecvMBTI    (packet);   break;
+	case prSendEmo:     RecvEmoticon(packet);   break;
 
 	//default:			SendDefault(packet);	break;
 	}
@@ -249,4 +253,40 @@ void User::RecvBoneData(char* packet)
 	// SendOther()
 	g_User.SendAll(packet, sizeof(stBoneData));
 	puts("Recv And Send All Packet");
+}
+
+void User::RecvTransPos(char* packet)
+{
+	stTransform req;
+	memcpy(&req, packet, sizeof(stTransform));
+	g_User.SendAll(packet, sizeof(stTransform));
+}
+
+
+
+void User::RecvMatchReq(char* packet)
+{
+	stMatchingReq req;
+	memcpy(&req, packet, sizeof(stMatchingReq));
+
+
+
+}
+
+void User::RecvFirstAtr(char* packet)
+{
+	stFirstAttract req;
+	memcpy(&req, packet, sizeof(stFirstAttract));
+}
+
+void User::RecvMBTI(char* packet)
+{
+	stMBTI req;
+	memcpy(&req, packet, sizeof(stMBTI));
+}
+
+void User::RecvEmoticon(char* packet)
+{
+	stSendEmo req;
+	memcpy(&req, packet, sizeof(stSendEmo));
 }

@@ -42,6 +42,10 @@ public:
 public: //RECV
 	void RecvLoginReq(char* packet);
 	void RecvBoneData(char* packet);
-
+	void RecvTransPos(char* packet);
+	void RecvMatchReq(char* packet);
+	void RecvFirstAtr(char* packet);
+	void RecvMBTI    (char* packet);
+	void RecvEmoticon(char* packet);
 };
 

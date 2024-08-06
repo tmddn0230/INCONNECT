@@ -55,7 +55,7 @@ public class ICNetworkManager : MonoBehaviour
         if (bSocketReady) return;
 
         // HOST / PORT
-        string ip = "58.127.66.152";
+        string ip = "127.0.0.1";
         int port = 25000;
 
         // Create Socket 
@@ -585,6 +585,8 @@ public class ICNetworkManager : MonoBehaviour
             int UID = reader.ReadInt32();
             // Result 읽기
             int Result = reader.ReadInt32();
+
+            ICClient.Instance.Actor_Spawn(UID, Result);
         }
     }
 

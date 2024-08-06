@@ -22,6 +22,16 @@ public class ICInputManager : MonoBehaviour
     // Set Instance
     private static ICInputManager instance;
 
+    public GameObject mOVRCam;
+
+    private void OnEnable()
+    {
+        mOVRCam.SetActive(true);
+    }
+    private void OnDisable()
+    {
+        mOVRCam.SetActive(false);   
+    }
     public static ICInputManager Instance
     {
         get

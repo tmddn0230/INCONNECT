@@ -1,4 +1,10 @@
-﻿  User.cpp
-  ICServer.vcxproj -> E:\GitDesk\INCONNECT\Server\ICServer\ICServer\x64\Debug\ICServer.exe
-  'pwsh.exe'은(는) 내부 또는 외부 명령, 실행할 수 있는 프로그램, 또는
-  배치 파일이 아닙니다.
+﻿  ICGlobal.cpp
+  ICServer.cpp
+D:\UnityGit\INCONNECT\Server\ICServer\ICServer\ICServer.cpp(65,70): warning C4312: '형식 캐스트': 'int'에서 더 큰 'void *'(으)로의 변환입니다.
+D:\UnityGit\INCONNECT\Server\ICServer\ICServer\ICServer.cpp(87,12): warning C4551: 함수 호출에 인수 목록이 없습니다.
+D:\UnityGit\INCONNECT\Server\ICServer\ICServer\ICServer.cpp(220,23): warning C4311: '형식 캐스트': 'void *'에서 'int'(으)로 포인터가 잘립니다.
+D:\UnityGit\INCONNECT\Server\ICServer\ICServer\ICServer.cpp(220,23): warning C4302: '형식 캐스트': 'void *'에서 'int'(으)로 잘립니다.
+  User.cpp
+  UserManager.cpp
+  코드를 생성하고 있습니다...
+  ICServer.vcxproj -> D:\UnityGit\INCONNECT\Server\ICServer\ICServer\x64\Debug\ICServer.exe

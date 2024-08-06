@@ -2,15 +2,27 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Rokoko.Inputs;
+using Packet;
 
 public class ICActorDataSynchronizer : MonoBehaviour
 {
     public Actor m_actor;
     public CoreBoneData m_coreBoneData;
+    public ICNetworkManager mNetworkManager;
+    public int testUID;
 
     // Update is called once per frame
     void Update()
     {
+        if(testUID == 1)
+        {
+            testupdate();
+        }
+        else
+        {
+            testsend();
+        }
+
         if (m_actor == null) return;
 
         m_coreBoneData.hipPosition = GetPositionArray(HumanBodyBones.Hips);
@@ -43,6 +55,27 @@ public class ICActorDataSynchronizer : MonoBehaviour
         m_coreBoneData.rightHandRotation = GetRotationArray(HumanBodyBones.RightHand);
         // 실시간으로 데이터를 업데이트합니다.
         CharacterAnim.Instance?.UpdateCharacter(m_coreBoneData);
+    }
+    void testsend()
+    {
+        if(mNetworkManager != null)
+        {
+            ICPacket_Bone bonepacket = new ICPacket_Bone();
+            bonepacket.SetMotionProtocol();
+            bonepacket.UID = 2;
+            bonepacket.bonedata = m_coreBoneData;
+
+            mNetworkManager.SendPacket_Bone(bonepacket);
+        }
+    }
+
+    void testupdate()
+    {
+        if(mNetworkManager != null)
+        {
+            mNetworkManager.GetReciever().GetDictionValue(1, m_coreBoneData);
+            CharacterAnim.Instance?.UpdateCharacter(m_coreBoneData);
+        }
     }
 
     private float[] GetPositionArray(HumanBodyBones bone)

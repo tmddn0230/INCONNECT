@@ -48,7 +48,7 @@ public class ICNetworkManager : MonoBehaviour
     // Receiver
     ICPacketReciever packetReciever;
     ICMotionReciever motionReciever;
-
+    public ICMotionReciever GetReciever() { return motionReciever; }
     public void ConnectToServer()
     {
         // if Client Connected aready, return
@@ -123,6 +123,8 @@ public class ICNetworkManager : MonoBehaviour
         SendPacket_Login(packetStruct);
     }
 
+
+
     void Send(string data)
     {
         if (!bSocketReady) return;
@@ -137,7 +139,7 @@ public class ICNetworkManager : MonoBehaviour
         mWriter.Flush();
     }
 
-    void SendPacket_Bone(ICPacket_Bone packet)
+    public void SendPacket_Bone(ICPacket_Bone packet)
     {
         /*
         using (MemoryStream ms = new MemoryStream())
@@ -616,7 +618,8 @@ public class ICNetworkManager : MonoBehaviour
             int UID = reader.ReadInt32();
 
             CoreBoneData bonepacket = new CoreBoneData();
-            
+            bonepacket.Init();
+
             bonepacket.headPosition = readfloat(bonepacket.headPosition, reader);
             bonepacket.headRotation = readfloat(bonepacket.headRotation, reader);
             bonepacket.neckPosition = readfloat(bonepacket.neckPosition, reader);

@@ -47,6 +47,12 @@ public class ICMotionReciever
         MotionDic.Add(uid, core);
     }
 
+    public void GetDictionValue(int uid, CoreBoneData core)
+    {
+        MotionDic.TryGetValue(uid, out core);
+    }
+
+
     void ProcessRecvPackets()
     {
         /*

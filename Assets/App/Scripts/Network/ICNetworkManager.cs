@@ -18,9 +18,13 @@ using UnityEditor.Sprites;
 using Unity.VisualScripting;
 using Newtonsoft.Json;
 using UnityEngine.Analytics;
+using System.Drawing;
 
 public class ICNetworkManager : MonoBehaviour
 {
+    // Login Info
+    int UID;
+
     // Test InputField UI
     public InputField mIPInput, mPortInput, mNickInput;
     private ICPacketQueue SendPacketQueue;
@@ -91,21 +95,32 @@ public class ICNetworkManager : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha1))
         {
             // Queue Init
-            ICPacket packetStruct = new ICPacket();
-            packetStruct.MakeBone();
-            packetStruct.SetMotionProtocol(Marshal.SizeOf(packetStruct));
+            ICPacket_Bone packetStruct = new ICPacket_Bone();
+            //packetStruct.MakeBone();
+            packetStruct.SetMotionProtocol();
             
             SendPacket_Bone(packetStruct);
         }
         else if(Input.GetKeyDown(KeyCode.Alpha2))
         {
-            Send("SIBAL HUCK");
+            Login("","");
         }
 
         if (mStream != null && mStream.DataAvailable)
         {
             ReceiveData();
         }
+    }
+
+    void Login(string ID, string Password)
+    {
+
+        // Queue Init
+        ICPacket_Login packetStruct = new ICPacket_Login();
+        //packetStruct.MakeBone();
+        packetStruct.SetLoginProtocol();
+
+        SendPacket_Login(packetStruct);
     }
 
     void Send(string data)
@@ -122,14 +137,137 @@ public class ICNetworkManager : MonoBehaviour
         mWriter.Flush();
     }
 
-    void SendPacket_Bone(ICPacket packetStruct)
+    void SendPacket_Bone(ICPacket_Bone packet)
     {
-        SendPacketQueue.Enqueue(packetStruct);
+        /*
+        using (MemoryStream ms = new MemoryStream())
+        {
+            BinaryWriter writer = new BinaryWriter(ms);
+
+            // Header First
+            // Convert UID to network byte order (big endian)
+            //writer.Write(BitConverter.GetBytes(System.Net.IPAddress.HostToNetworkOrder(packet.packetHeader.nID)));
+            writer.Write(packet.packetHeader.nID);
+            writer.Write(packet.packetHeader.nSize);
+            writer.Write(packet.packetHeader.nType);
+            writer.Write(packet.packetHeader.nCheckSum);
+
+            writer.Write(packet.UID);
+
+            // Write positions and rotations
+            // Body
+            writefloat(packet.headPosition, writer);
+            writefloat(packet.headRotation, writer);
+            writefloat(packet.neckPosition, writer);
+            writefloat(packet.neckRotation, writer);
+            writefloat(packet.chestPosition, writer);
+            writefloat(packet.chestRotation, writer);
+            writefloat(packet.spinePosition, writer);
+            writefloat(packet.spineRotation, writer);
+            writefloat(packet.hipPosition, writer);
+            writefloat(packet.hipRotation, writer);
+            // HAND
+            writefloat(packet.leftUpperArmPosition, writer);
+            writefloat(packet.leftUpperArmRotation, writer);
+            writefloat(packet.leftLowerArmPosition, writer);
+            writefloat(packet.leftLowerArmRotation, writer);
+            writefloat(packet.leftHandPosition, writer);
+            writefloat(packet.leftHandRotation, writer);
+            writefloat(packet.rightUpperArmPosition, writer);
+            writefloat(packet.rightUpperArmRotation, writer);
+            writefloat(packet.rightLowerArmPosition, writer);
+            writefloat(packet.rightLowerArmRotation, writer);
+            writefloat(packet.rightHandPosition, writer);
+            writefloat(packet.rightHandRotation, writer);
+            // FOOT
+            writefloat(packet.leftFootPosition, writer);
+            writefloat(packet.leftFootRotation, writer);
+            writefloat(packet.rightHandPosition, writer);
+            writefloat(packet.rightHandRotation, writer);
+
+            byte[] data = ms.ToArray();
+            packet.SetMotionProtocol(data.Length);
+            ms.SetLength(0);
+
+            // Final Packet
+            writer.Write(packet.packetHeader.nID);
+            writer.Write(packet.packetHeader.nSize);
+            writer.Write(packet.packetHeader.nType);
+            writer.Write(packet.packetHeader.nCheckSum);
+
+            writer.Write(packet.UID);
+
+            // Write positions and rotations
+            // Body
+            writefloat(packet.headPosition, writer);
+            writefloat(packet.headRotation, writer);
+            writefloat(packet.neckPosition, writer);
+            writefloat(packet.neckRotation, writer);
+            writefloat(packet.chestPosition, writer);
+            writefloat(packet.chestRotation, writer);
+            writefloat(packet.spinePosition, writer);
+            writefloat(packet.spineRotation, writer);
+            writefloat(packet.hipPosition, writer);
+            writefloat(packet.hipRotation, writer);
+            // HAND
+            writefloat(packet.leftUpperArmPosition, writer);
+            writefloat(packet.leftUpperArmRotation, writer);
+            writefloat(packet.leftLowerArmPosition, writer);
+            writefloat(packet.leftLowerArmRotation, writer);
+            writefloat(packet.leftHandPosition, writer);
+            writefloat(packet.leftHandRotation, writer);
+            writefloat(packet.rightUpperArmPosition, writer);
+            writefloat(packet.rightUpperArmRotation, writer);
+            writefloat(packet.rightLowerArmPosition, writer);
+            writefloat(packet.rightLowerArmRotation, writer);
+            writefloat(packet.rightHandPosition, writer);
+            writefloat(packet.rightHandRotation, writer);
+            // FOOT
+            writefloat(packet.leftFootPosition, writer);
+            writefloat(packet.leftFootRotation, writer);
+            writefloat(packet.rightHandPosition, writer);
+            writefloat(packet.rightHandRotation, writer);
+
+            byte[] finalData = ms.ToArray();
+          
+
+
+            mStream.Write(finalData, 0, finalData.Length);
+        }
+        */
+        int size = packet.packetHeader.nSize;
+        byte[] bytes = new byte[size];
+        IntPtr ptr = Marshal.AllocHGlobal(size);
+        try
+        {
+            Marshal.StructureToPtr(packet, ptr, true);
+            Marshal.Copy(ptr, bytes, 0, size);
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(ptr);
+        }
+
+        SendPacketQueue.Enqueue(bytes);
     }
 
-    void SendPacket_Login(ICPacket packetStruct)
+    void SendPacket_Login(ICPacket_Login packet)
     {
-        SendPacketQueue.Enqueue(packetStruct);
+
+        int size = packet.packetHeader.nSize;
+        byte[] bytes = new byte[size];
+        IntPtr ptr = Marshal.AllocHGlobal(size);
+        try
+        {
+            Marshal.StructureToPtr(packet, ptr, true);
+            Marshal.Copy(ptr, bytes, 0, size);
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(ptr);
+        }
+
+        SendPacketQueue.Enqueue(bytes);
     }
 
 
@@ -158,12 +296,28 @@ public class ICNetworkManager : MonoBehaviour
         Debug.Log("Processing thread started.");
         while (bRun)
         {
-            //Debug.Log("Using Thead");
 
             if(SendPacketQueue == null) continue;
+            byte[] dequeueBytes;
+            dequeueBytes = SendPacketQueue.Dequeue();
+            if (dequeueBytes != null)
+            {
+                // 여기서 Send
+                Debug.Log("Packet");
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    BinaryWriter writer = new BinaryWriter(ms);
+                    mStream.Write(dequeueBytes, 0, dequeueBytes.Length);
+                }
+            }
+            else
+            {
+                Debug.Log("Packet Empty");
+            }
 
-            ICPacket packet = SendPacketQueue.Dequeue();
-            if (packet != null)
+          
+            // 제거 예정
+            /*
             {
 
                 using (MemoryStream ms = new MemoryStream())
@@ -265,8 +419,10 @@ public class ICNetworkManager : MonoBehaviour
                 Debug.Log("Packet Empty");
             }
 
+             */
             Thread.Sleep(10);
         }
+
     }
 
 
@@ -290,6 +446,8 @@ public class ICNetworkManager : MonoBehaviour
             // 헤더의 프로토콜에 따라 
             Parse(header);
 
+            /*
+
             int totalSize = header.nSize - headerSize;
             // 전체 패킷 데이터를 읽습니다
             byte[] buffer = new byte[totalSize];
@@ -307,7 +465,7 @@ public class ICNetworkManager : MonoBehaviour
 
                 // UID 읽기
                 int UID = reader.ReadInt32();
-
+       
                 ICPacket recvpacket = new ICPacket();
                 // Set Header
                 recvpacket.packetHeader = header;
@@ -347,7 +505,9 @@ public class ICNetworkManager : MonoBehaviour
                 recvpacket.rightFootRotation = readfloat(recvpacket.rightFootRotation, reader);
 
                 motionReciever.AddPacketQueue(recvpacket);
+            
             }
+            */
         }
         catch (Exception e)
         {
@@ -368,14 +528,38 @@ public class ICNetworkManager : MonoBehaviour
     {
         switch ((enProtocol)header.nID)
         {
-            case enProtocol.prLoginAck:
-                RecvBoneData(header);
+            case enProtocol.prConnectAck:
+                RecvConnectAck(header);
                 break;
             case enProtocol.prBoneData:
+                RecvBoneData(header);
+                break;
+            case enProtocol.prLoginAck:
                 RecvLoginAck(header);
                 break;
             case enProtocol.prENTPORTAL:
                 break;
+
+        }
+    }
+
+    void RecvConnectAck(StHeader header)
+    {
+        int headerSize = Marshal.SizeOf(typeof(StHeader));
+        int totalSize = header.nSize - headerSize;
+        // 전체 패킷 데이터를 읽습니다
+        int bytesRead;
+        byte[] buffer = new byte[totalSize];
+        bytesRead = mStream.Read(buffer, 0, totalSize);
+
+        if (bytesRead != totalSize)
+        {
+            throw new Exception("Failed to read packet data");
+        }
+
+        // 데이터를 MemoryStream에 저장하고 읽어 들입니다
+        using (MemoryStream ms = new MemoryStream(buffer))
+        {
 
         }
     }
@@ -425,45 +609,45 @@ public class ICNetworkManager : MonoBehaviour
             // UID 읽기
             int UID = reader.ReadInt32();
 
-            ICPacket recvpacket = new ICPacket();
+            //ICPacket recvpacket = new ICPacket();
             // Set Header
-            recvpacket.packetHeader = header;
+            //recvpacket.packetHeader = header;
             // Set UID
-            recvpacket.UID = UID;
+            //recvpacket.UID = UID;
             // positions 및 rotations 읽기 & Set
             // Body
-            recvpacket.headPosition = readfloat(recvpacket.headPosition, reader);
-            recvpacket.headRotation = readfloat(recvpacket.headRotation, reader);
-            recvpacket.neckPosition = readfloat(recvpacket.neckPosition, reader);
-            recvpacket.neckRotation = readfloat(recvpacket.neckRotation, reader);
-            recvpacket.chestPosition = readfloat(recvpacket.chestPosition, reader);
-            recvpacket.chestRotation = readfloat(recvpacket.chestRotation, reader);
-            recvpacket.spinePosition = readfloat(recvpacket.spinePosition, reader);
-            recvpacket.spineRotation = readfloat(recvpacket.spineRotation, reader);
-            recvpacket.hipPosition = readfloat(recvpacket.hipPosition, reader);
-            recvpacket.hipRotation = readfloat(recvpacket.hipRotation, reader);
+           // recvpacket.headPosition = readfloat(recvpacket.headPosition, reader);
+           // recvpacket.headRotation = readfloat(recvpacket.headRotation, reader);
+           // recvpacket.neckPosition = readfloat(recvpacket.neckPosition, reader);
+           // recvpacket.neckRotation = readfloat(recvpacket.neckRotation, reader);
+           // recvpacket.chestPosition = readfloat(recvpacket.chestPosition, reader);
+           // recvpacket.chestRotation = readfloat(recvpacket.chestRotation, reader);
+           // recvpacket.spinePosition = readfloat(recvpacket.spinePosition, reader);
+           // recvpacket.spineRotation = readfloat(recvpacket.spineRotation, reader);
+           // recvpacket.hipPosition = readfloat(recvpacket.hipPosition, reader);
+           // recvpacket.hipRotation = readfloat(recvpacket.hipRotation, reader);
+           //
+           // // Hands
+           // recvpacket.leftUpperArmPosition = readfloat(recvpacket.leftUpperArmPosition, reader);
+           // recvpacket.leftUpperArmRotation = readfloat(recvpacket.leftUpperArmRotation, reader);
+           // recvpacket.leftLowerArmPosition = readfloat(recvpacket.leftLowerArmPosition, reader);
+           // recvpacket.leftLowerArmRotation = readfloat(recvpacket.leftLowerArmRotation, reader);
+           // recvpacket.leftHandPosition = readfloat(recvpacket.leftHandPosition, reader);
+           // recvpacket.leftHandRotation = readfloat(recvpacket.leftHandRotation, reader);
+           // recvpacket.rightUpperArmPosition = readfloat(recvpacket.rightUpperArmPosition, reader);
+           // recvpacket.rightUpperArmRotation = readfloat(recvpacket.rightUpperArmRotation, reader);
+           // recvpacket.rightLowerArmPosition = readfloat(recvpacket.rightLowerArmPosition, reader);
+           // recvpacket.rightLowerArmRotation = readfloat(recvpacket.rightLowerArmRotation, reader);
+           // recvpacket.rightHandPosition = readfloat(recvpacket.rightHandPosition, reader);
+           // recvpacket.rightHandRotation = readfloat(recvpacket.rightHandRotation, reader);
+           //
+           // // Foots
+           // recvpacket.leftFootPosition = readfloat(recvpacket.leftFootPosition, reader);
+           // recvpacket.leftFootRotation = readfloat(recvpacket.leftFootRotation, reader);
+           // recvpacket.rightFootPosition = readfloat(recvpacket.rightFootPosition, reader);
+           // recvpacket.rightFootRotation = readfloat(recvpacket.rightFootRotation, reader);
 
-            // Hands
-            recvpacket.leftUpperArmPosition = readfloat(recvpacket.leftUpperArmPosition, reader);
-            recvpacket.leftUpperArmRotation = readfloat(recvpacket.leftUpperArmRotation, reader);
-            recvpacket.leftLowerArmPosition = readfloat(recvpacket.leftLowerArmPosition, reader);
-            recvpacket.leftLowerArmRotation = readfloat(recvpacket.leftLowerArmRotation, reader);
-            recvpacket.leftHandPosition = readfloat(recvpacket.leftHandPosition, reader);
-            recvpacket.leftHandRotation = readfloat(recvpacket.leftHandRotation, reader);
-            recvpacket.rightUpperArmPosition = readfloat(recvpacket.rightUpperArmPosition, reader);
-            recvpacket.rightUpperArmRotation = readfloat(recvpacket.rightUpperArmRotation, reader);
-            recvpacket.rightLowerArmPosition = readfloat(recvpacket.rightLowerArmPosition, reader);
-            recvpacket.rightLowerArmRotation = readfloat(recvpacket.rightLowerArmRotation, reader);
-            recvpacket.rightHandPosition = readfloat(recvpacket.rightHandPosition, reader);
-            recvpacket.rightHandRotation = readfloat(recvpacket.rightHandRotation, reader);
-
-            // Foots
-            recvpacket.leftFootPosition = readfloat(recvpacket.leftFootPosition, reader);
-            recvpacket.leftFootRotation = readfloat(recvpacket.leftFootRotation, reader);
-            recvpacket.rightFootPosition = readfloat(recvpacket.rightFootPosition, reader);
-            recvpacket.rightFootRotation = readfloat(recvpacket.rightFootRotation, reader);
-
-            motionReciever.AddPacketQueue(recvpacket);
+           // motionReciever.AddPacketQueue(recvpacket);
         }
     }
 

@@ -1,42 +1,57 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
 
-class ICVmain
+class Program
 {
-    const int ReceivePort = 5005;  // 음성 데이터 수신 포트
-    const int SendPort = 5006;     // 음성 데이터 전송 포트
+    private static readonly Dictionary<IPEndPoint, int> clients = new Dictionary<IPEndPoint, int>();
+    private static readonly object lockObj = new object();
 
-    static void Main(string[] args)
+    static void Main()
     {
-        UdpClient receiveClient = new UdpClient(ReceivePort);
-        UdpClient sendClient = new UdpClient();
+        int port = 5005;
+        UdpClient udpServer = new UdpClient(port);
+        Console.WriteLine($"UDP 서버가 {port} 포트에서 음성 데이터를 수신합니다.");
 
-        IPEndPoint receiveEndPoint = new IPEndPoint(IPAddress.Any, ReceivePort);
-        IPEndPoint sendEndPoint = new IPEndPoint(IPAddress.Loopback, SendPort);
-
-        Console.WriteLine("UDP 서버가 {0} 포트에서 음성 데이터를 수신하고 {1} 포트로 전송합니다.", ReceivePort, SendPort);
-
-        try
+        while (true)
         {
-            while (true)
+            IPEndPoint clientEndPoint = new IPEndPoint(IPAddress.Any, 0);
+            byte[] clientData = udpServer.Receive(ref clientEndPoint);
+            Console.WriteLine($"수신한 데이터 길이: {clientData.Length} from {clientEndPoint}");
+
+            lock (lockObj)
             {
-                // 데이터 수신
-                byte[] data = receiveClient.Receive(ref receiveEndPoint);
-                Console.WriteLine("수신한 데이터 길이: {0}", data.Length);
-
-                // 받은 데이터를 클라이언트에게 다시 전송
-                sendClient.Send(data, data.Length, sendEndPoint);
+                // 첫 번째 패킷으로 포트 정보를 받아서 저장
+                if (clientData.Length == 4) // 예를 들어, 포트 정보가 4바이트로 전달된다고 가정
+                {
+                    int localPort = BitConverter.ToInt32(clientData, 0);
+                    if (!clients.ContainsKey(clientEndPoint))
+                    {
+                        clients[clientEndPoint] = localPort;
+                        Console.WriteLine($"클라이언트 추가: {clientEndPoint} (로컬 포트: {localPort})");
+                    }
+                }
+                else
+                {
+                    // 데이터 송신
+                    foreach (var client in clients)
+                    {
+                        // 데이터를 보낸 클라이언트에게는 전송하지 않음
+                        if (!client.Key.Equals(clientEndPoint))
+                        {
+                            try
+                            {
+                                udpServer.Send(clientData, clientData.Length, new IPEndPoint(IPAddress.Loopback, client.Value));
+                            }
+                            catch (Exception e)
+                            {
+                                Console.WriteLine("전송 오류: " + e.Message);
+                            }
+                        }
+                    }
+                }
             }
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine("예외 발생: " + e.Message);
-        }
-        finally
-        {
-            receiveClient.Close();
-            sendClient.Close();
         }
     }
 }

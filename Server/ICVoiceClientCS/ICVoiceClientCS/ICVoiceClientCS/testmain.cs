@@ -1,75 +1,80 @@
 ﻿using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 using NAudio.Wave;
 
-class testmain
+class Client
 {
-    const int SendPort = 5005;  // 서버의 음성 데이터 수신 포트
-    const int ReceivePort = 5006; // 서버의 음성 데이터 전송 포트
-
     static void Main(string[] args)
     {
-        UdpClient sendClient = new UdpClient();
-        UdpClient receiveClient = new UdpClient(ReceivePort);
+        Console.WriteLine("UDP 클라이언트 시작");
 
-        //IPAddress.Loopback 을 서버 실재 ip로변경할수있다
-        IPEndPoint sendEndPoint = new IPEndPoint(IPAddress.Loopback, SendPort);
-        IPEndPoint receiveEndPoint = new IPEndPoint(IPAddress.Any, ReceivePort);
+        // INI 파일에서 포트 번호와 IP 주소 읽기
+        var config = new IniFile("client.ini");
+        int localPort = int.Parse(config.Read("Ports", "LocalPort", "5001"));
+        int serverPort = int.Parse(config.Read("Ports", "ServerPort", "5005"));
+        string serverIpAddress = config.Read("Ports", "ServerIpAddress", "127.0.0.1");
 
-        WaveFormat waveFormat = new WaveFormat(44100, 16, 1); // 44.1kHz, 16-bit, Mono
-        BufferedWaveProvider waveProvider = new BufferedWaveProvider(waveFormat);
-        WaveOutEvent waveOut = new WaveOutEvent();
-
-        waveOut.Init(waveProvider);
-        waveOut.Play();
-
-        // 음성 데이터 전송을 위한 쓰레드
-        var sendThread = new Thread(() =>
+        using (var receiveClient = new UdpClient(localPort))
+        using (var sendClient = new UdpClient())
         {
-            using (var waveIn = new WaveInEvent())
-            {
-                waveIn.WaveFormat = waveFormat;
-                waveIn.BufferMilliseconds = 50; // 50ms 버퍼링
-                waveIn.DataAvailable += (s, e) =>
-                {
-                    // 음성 데이터를 서버로 전송
-                    sendClient.Send(e.Buffer, e.BytesRecorded, sendEndPoint);
-                };
+            Console.WriteLine($"클라이언트가 {localPort} 포트에서 수신합니다.");
 
-                waveIn.StartRecording();
-                Console.WriteLine("음성 전송을 시작합니다. 종료하려면 Enter를 누르세요.");
-                Console.ReadLine();
-                waveIn.StopRecording();
-            }
-        });
+            // 서버에 로컬 포트 정보 전송
+            byte[] localPortInfo = BitConverter.GetBytes(localPort);
+            sendClient.Send(localPortInfo, localPortInfo.Length, new IPEndPoint(IPAddress.Parse(serverIpAddress), serverPort));
 
-        // 음성 데이터 수신을 위한 메인 쓰레드
-        var receiveThread = new Thread(() =>
-        {
-            try
+            // 음성 캡처 및 송신
+            var waveIn = new WaveInEvent();
+            var waveFormat = new WaveFormat(8000, 16, 1); // 8kHz, 16-bit, Mono
+            waveIn.WaveFormat = waveFormat;
+            waveIn.BufferMilliseconds = 20; // 20ms buffer size
+            waveIn.DataAvailable += (sender, e) =>
             {
-                while (true)
+                try
                 {
-                    // 데이터 수신
-                    byte[] data = receiveClient.Receive(ref receiveEndPoint);
-                    waveProvider.AddSamples(data, 0, data.Length);
+                    // 서버에 데이터 송신
+                    sendClient.Send(e.Buffer, e.BytesRecorded, new IPEndPoint(IPAddress.Parse(serverIpAddress), serverPort));
                 }
-            }
-            catch (Exception e)
-            {
-                Console.WriteLine("예외 발생: " + e.Message);
-            }
-            finally
-            {
-                receiveClient.Close();
-            }
-        });
+                catch (Exception ex)
+                {
+                    Console.WriteLine("송신 오류: " + ex.Message);
+                }
+            };
+            waveIn.StartRecording();
 
-        receiveThread.Start();
-        sendThread.Start();
+            // 음성 수신 및 재생
+            var waveOut = new WaveOutEvent();
+            var buffer = new BufferedWaveProvider(waveFormat);
+            waveOut.Init(buffer);
+            waveOut.Play();
 
-        receiveThread.Join();
-        sendThread.Join();
+            Thread receiveThread = new Thread(() =>
+            {
+                IPEndPoint receiveEndPoint = new IPEndPoint(IPAddress.Any, localPort);
+
+                try
+                {
+                    while (true)
+                    {
+                        byte[] data = receiveClient.Receive(ref receiveEndPoint);
+                        buffer.AddSamples(data, 0, data.Length);
+                    }
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine("수신 오류: " + e.Message);
+                }
+            });
+            receiveThread.Start();
+
+            // 클라이언트 종료를 기다리기 위한 대기
+            Console.WriteLine("음성 통신을 종료하려면 Enter를 누르세요.");
+            Console.ReadLine();
+
+            waveIn.StopRecording();
+            waveOut.Stop();
+        }
     }
 }

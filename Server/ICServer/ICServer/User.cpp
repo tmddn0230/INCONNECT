@@ -227,7 +227,17 @@ void User::Parse(int protocol, char* packet)
 
 void User::RecvLoginReq(char* packet)
 {
+	//req 처리는 나중에
+	stLoginAck ack;
 
+	char buffer[64];	
+	memset(buffer, 0x00, sizeof(buffer));
+
+
+	ack.UID = g_User.GetUserCount();
+	ack.Result = 1; // SUCCESS
+	memcpy( buffer, &ack, sizeof(stLoginAck));
+	g_User.SendAll(buffer, sizeof(stLoginAck));
 }
 
 void User::RecvBoneData(char* packet)

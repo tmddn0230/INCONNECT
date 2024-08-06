@@ -45,8 +45,8 @@ namespace Packet
     {
 
         public StHeader packetHeader;
-        public CoreBoneData bonedata;
         public int UID;
+        public CoreBoneData bonedata;
 
         public void SetMotionProtocol()
         {

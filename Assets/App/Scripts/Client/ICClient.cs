@@ -19,7 +19,6 @@ public class ICClient : MonoBehaviour
         // Result가 1이 아닌 경우 리턴
         if (Result != 1)
             return;
-        uid = uid + 1;
         // UID가 유효한 범위인지 확인
         if (uid < 1 || uid > mActors.Length)
             return;

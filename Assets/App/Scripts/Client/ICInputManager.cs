@@ -67,7 +67,7 @@ public class ICInputManager : MonoBehaviour
 
     void Update()
     {
-        if (Ismine)
+        if (!Ismine)
             return;
         // Controller Input Update
         MetaInputController();

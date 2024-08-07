@@ -3856,7 +3856,9 @@ MonoBehaviour:
   mActors:
   - {fileID: 8103111504053840946, guid: 336f9654123e49544b98bb2cc40a0a15, type: 3}
   - {fileID: 6640307422605843865, guid: d9f25a05163909147a62186bae9b3f19, type: 3}
-  spawnedActors: []
+  spawnedActors:
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!1001 &1363097885
 PrefabInstance:
   m_ObjectHideFlags: 0

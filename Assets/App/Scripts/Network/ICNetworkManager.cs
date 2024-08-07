@@ -452,7 +452,7 @@ public class ICNetworkManager : MonoBehaviour
             // Result 읽기
             int Result = reader.ReadInt32();
 
-            ICClient.Instance.Actor_Spawn(UID, Result);
+            ICClient.Instance.Actor_Spawn(UID + 1, Result);
         }
     }
 

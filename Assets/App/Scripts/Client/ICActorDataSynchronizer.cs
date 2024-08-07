@@ -19,7 +19,15 @@ public class ICActorDataSynchronizer : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-  
+        if(testUID == 1)
+        {
+            testupdate();
+        }
+        else if(testUID == 0)
+        {
+            testsend();
+        }
+
         if (m_actor == null) return;
 
         m_coreBoneData.hipPosition = GetPositionArray(HumanBodyBones.Hips);
@@ -69,7 +77,7 @@ public class ICActorDataSynchronizer : MonoBehaviour
         {
             ICPacket_Bone bonepacket = new ICPacket_Bone();
             bonepacket.SetMotionProtocol();
-            bonepacket.UID = 2;
+            bonepacket.UID = 0;
             bonepacket.bonedata = m_coreBoneData;
 
             mNetworkManager.SendPacket_Bone(bonepacket);

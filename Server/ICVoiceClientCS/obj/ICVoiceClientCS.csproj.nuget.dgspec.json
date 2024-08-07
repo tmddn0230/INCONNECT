@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\user\\Documents\\GitHub\\INCONNECT\\Server\\ICVoiceServerCS\\ICVoiceServerCS\\ICVoiceServerCS\\ICVoiceServerCS.csproj": {}
+    "C:\\Users\\user\\Documents\\GitHub\\INCONNECT\\Server\\ICVoiceClientCS\\ICVoiceClientCS.csproj": {}
   },
   "projects": {
-    "C:\\Users\\user\\Documents\\GitHub\\INCONNECT\\Server\\ICVoiceServerCS\\ICVoiceServerCS\\ICVoiceServerCS\\ICVoiceServerCS.csproj": {
+    "C:\\Users\\user\\Documents\\GitHub\\INCONNECT\\Server\\ICVoiceClientCS\\ICVoiceClientCS.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\user\\Documents\\GitHub\\INCONNECT\\Server\\ICVoiceServerCS\\ICVoiceServerCS\\ICVoiceServerCS\\ICVoiceServerCS.csproj",
-        "projectName": "ICVoiceServerCS",
-        "projectPath": "C:\\Users\\user\\Documents\\GitHub\\INCONNECT\\Server\\ICVoiceServerCS\\ICVoiceServerCS\\ICVoiceServerCS\\ICVoiceServerCS.csproj",
+        "projectUniqueName": "C:\\Users\\user\\Documents\\GitHub\\INCONNECT\\Server\\ICVoiceClientCS\\ICVoiceClientCS.csproj",
+        "projectName": "ICVoiceClientCS",
+        "projectPath": "C:\\Users\\user\\Documents\\GitHub\\INCONNECT\\Server\\ICVoiceClientCS\\ICVoiceClientCS.csproj",
         "packagesPath": "C:\\Users\\user\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\user\\Documents\\GitHub\\INCONNECT\\Server\\ICVoiceServerCS\\ICVoiceServerCS\\ICVoiceServerCS\\obj\\",
+        "outputPath": "C:\\Users\\user\\Documents\\GitHub\\INCONNECT\\Server\\ICVoiceClientCS\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
@@ -49,6 +49,12 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "NAudio": {
+              "target": "Package",
+              "version": "[2.2.1, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",

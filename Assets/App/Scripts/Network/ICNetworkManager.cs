@@ -177,6 +177,7 @@ public class ICNetworkManager : MonoBehaviour
     {
         ICPacket_First packetStruct = new ICPacket_First();
         packetStruct.SetAttractProtocol();
+        packetStruct.UID = UID;
         packetStruct.Score = score;
 
         int size = packetStruct.packetHeader.nSize;
@@ -218,6 +219,7 @@ public class ICNetworkManager : MonoBehaviour
     {
         ICPacket_After packetStruct = new ICPacket_After();
         packetStruct.SetAfterProtocol();
+        packetStruct.UID = UID;
         packetStruct.Result = result;
 
         int size = packetStruct.packetHeader.nSize;
@@ -258,6 +260,7 @@ public class ICNetworkManager : MonoBehaviour
     {
         ICPacket_MBTI packetStruct = new ICPacket_MBTI();
         packetStruct.SetMBTIProtocol();
+        packetStruct.UID = UID;
         packetStruct.MBTI = mbti;
 
         int size = packetStruct.packetHeader.nSize;
@@ -280,6 +283,7 @@ public class ICNetworkManager : MonoBehaviour
     {
         ICPacket_EMO packetStruct = new ICPacket_EMO();
         packetStruct.SetEmoProtocol();
+        packetStruct.UID = UID;
         packetStruct.EMO = emotion;
 
         int size = packetStruct.packetHeader.nSize;

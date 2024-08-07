@@ -55,7 +55,7 @@ public class ICNetworkManager : MonoBehaviour
         if (bSocketReady) return;
 
         // HOST / PORT
-        string ip = "58.127.66.152";
+        string ip = "192.168.0.6";
         int port = 25000;
 
         // Create Socket 

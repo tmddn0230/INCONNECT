@@ -11,6 +11,11 @@ public class ICActorDataSynchronizer : MonoBehaviour
     public ICNetworkManager mNetworkManager;
     public int testUID;
 
+    private void Start()
+    {
+        mNetworkManager = GameObject.Find("NetworkManager").GetComponent<ICNetworkManager>();
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -46,16 +51,16 @@ public class ICActorDataSynchronizer : MonoBehaviour
         m_coreBoneData.rightHandPosition = GetPositionArray(HumanBodyBones.RightHand);
         m_coreBoneData.rightHandRotation = GetRotationArray(HumanBodyBones.RightHand);
         // 실시간으로 데이터를 업데이트합니다.
-        if (testUID == 1)
+        if (testUID == 1 /*&& Input.GetKeyDown(KeyCode.Alpha5)*/)
         {
             testupdate();
             return;
         }
-        else
+        if (testUID == 2 /*&& Input.GetKeyDown(KeyCode.Alpha4)*/)
         {
             testsend();
         }
-        CharacterAnim.Instance?.UpdateCharacter(m_coreBoneData);
+        //CharacterAnim.Instance?.UpdateCharacter(m_coreBoneData);
         
     }
     void testsend()

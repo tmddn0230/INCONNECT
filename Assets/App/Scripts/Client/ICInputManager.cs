@@ -24,6 +24,8 @@ public class ICInputManager : MonoBehaviour
 
     public GameObject mOVRCam;
     public bool Ismine = false;
+
+    public ICEmoticon ICEmoticon;
     //public int m_UID = 0;
     private void OnEnable()
     {

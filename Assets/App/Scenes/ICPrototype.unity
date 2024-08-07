@@ -6182,6 +6182,10 @@ PrefabInstance:
       propertyPath: m_IsActive
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 7925447797222870421, guid: 7ba18c1c36c27e34b9aeb27f3dc06e3b, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8159801591777772063, guid: 7ba18c1c36c27e34b9aeb27f3dc06e3b, type: 3}
       propertyPath: m_Sprite
       value: 
@@ -7811,6 +7815,10 @@ PrefabInstance:
       propertyPath: m_OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Target
       value: 
       objectReference: {fileID: 1594276271}
+    - target: {fileID: 6480948956822239464, guid: 336f9654123e49544b98bb2cc40a0a15, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 8103111504053840946, guid: 336f9654123e49544b98bb2cc40a0a15, type: 3}
       propertyPath: m_Name
       value: Man

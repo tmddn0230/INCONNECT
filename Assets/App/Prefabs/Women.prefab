@@ -12243,7 +12243,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 462170563039687225}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 1aa45b873f3354640b3a1ae4e1d60dc6, type: 3}
   m_Name: 
@@ -12254,6 +12254,7 @@ MonoBehaviour:
   mMoveSpeed: 3
   mRotationSpeed: 100
   mOVRCam: {fileID: 491638593637741896}
+  Ismine: 0
 --- !u!143 &4686022869059133534
 CharacterController:
   m_ObjectHideFlags: 0

@@ -62,4 +62,8 @@ public class ICEmoticon : MonoBehaviour
     {
         gameObject.SetActive(false);
     }
+    public void SendEmoticon(int i)
+    {
+        //ICNetworkManager.Instance.SendPacket_EMO(i);
+    }
 }

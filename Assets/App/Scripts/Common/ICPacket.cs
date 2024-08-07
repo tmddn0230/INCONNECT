@@ -19,6 +19,7 @@ namespace Packet
         prFirstAttract,
         prMBTI,
         prSendEmo,
+        prAfter,
 
         PROTOCOL_END
     };
@@ -68,6 +69,7 @@ namespace Packet
     {
 
         public StHeader packetHeader;
+        public int UID;
         float[] pos;
         float[] rot;
 
@@ -125,6 +127,9 @@ namespace Packet
     public class ICPacket_First
     {
         public StHeader packetHeader;
+        public int UID;
+        public int Score;
+        
         public void SetAttractProtocol()
         {
             int size;
@@ -139,6 +144,8 @@ namespace Packet
     public class ICPacket_MBTI
     {
         public StHeader packetHeader;
+        public int UID;
+        public int MBTI; // mbti 1 ~ 12
         public void SetMBTIProtocol()
         {
             int size;
@@ -153,15 +160,32 @@ namespace Packet
     public class ICPacket_EMO
     {
         public StHeader packetHeader;
+        public int UID;
+        public int EMO;
         public void SetEmoProtocol()
         {
             int size;
-            size = Marshal.SizeOf(packetHeader) + sizeof(int) + sizeof(int); // 멤버에 따라 수정
+            size = Marshal.SizeOf(packetHeader) + sizeof(int); // 멤버에 따라 수정
             packetHeader = new StHeader();
             packetHeader.SetHeader((int)enProtocol.prSendEmo, size);
         }
     }
 
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [System.Serializable]
+    public class ICPacket_After
+    {
+        public StHeader packetHeader;
+        public int UID;
+        public int Result;
+        public void SetAfterProtocol()
+        {
+            int size;
+            size = Marshal.SizeOf(packetHeader) + sizeof(int); // 멤버에 따라 수정
+            packetHeader = new StHeader();
+            packetHeader.SetHeader((int)enProtocol.prAfter, size);
+        }
+    }
 
     public class ICPacketQueue
     {

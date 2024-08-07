@@ -51,15 +51,15 @@ public class ICActorDataSynchronizer : MonoBehaviour
         m_coreBoneData.rightHandPosition = GetPositionArray(HumanBodyBones.RightHand);
         m_coreBoneData.rightHandRotation = GetRotationArray(HumanBodyBones.RightHand);
         // 실시간으로 데이터를 업데이트합니다.
-        if (testUID == 1 /*&& Input.GetKeyDown(KeyCode.Alpha5)*/)
-        {
-            testupdate();
-            return;
-        }
-        if (testUID == 2 /*&& Input.GetKeyDown(KeyCode.Alpha4)*/)
-        {
-            testsend();
-        }
+        //if (testUID == 1 /*&& Input.GetKeyDown(KeyCode.Alpha5)*/)
+        //{
+        //    testupdate();
+        //    return;
+        //}
+        //if (testUID == 2 /*&& Input.GetKeyDown(KeyCode.Alpha4)*/)
+        //{
+        //    testsend();
+        //}
         //CharacterAnim.Instance?.UpdateCharacter(m_coreBoneData);
         
     }
@@ -81,7 +81,7 @@ public class ICActorDataSynchronizer : MonoBehaviour
         if(mNetworkManager != null)
         {
             mNetworkManager.GetReciever().GetDictionValue(1, m_coreBoneData);
-            CharacterAnim.Instance?.UpdateCharacter(m_coreBoneData);
+            //CharacterAnim.Instance?.UpdateCharacter(m_coreBoneData);
         }
     }
 

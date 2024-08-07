@@ -86,10 +86,12 @@ struct stMatchingReq : public stHeader
 
 struct stMatchingAck : public stHeader
 {
+	uint32 UID;
 	uint32 Result;
 
 	stMatchingAck()
 	{
+		UID = 0;
 		Result = 0;
 		SetHeader(prMatchingAck, sizeof(stMatchingAck));
 	};
@@ -97,10 +99,12 @@ struct stMatchingAck : public stHeader
 
 struct stFirstAttract : public stHeader
 {
+	uint32 UID;
 	uint32 Score;
 
 	stFirstAttract()
 	{
+		UID = 0;
 		Score = 0;
 		SetHeader(prFirstAttract, sizeof(stFirstAttract));
 	};
@@ -108,11 +112,12 @@ struct stFirstAttract : public stHeader
 
 struct stMBTI : public stHeader
 {
-	uint32 Score;
+	uint32 UID;
+	uint32 MBTI;
 
 	stMBTI()
 	{
-		Score = 0;
+		MBTI = 0;
 		SetHeader(prMBTI, sizeof(stMBTI));
 	};
 };
@@ -120,12 +125,26 @@ struct stMBTI : public stHeader
 
 struct stSendEmo : public stHeader
 {
+	uint32 UID;
 	uint32 EmoNumber;
 
 	stSendEmo()
 	{
+		UID = 0;
 		EmoNumber = 0;
 		SetHeader(prSendEmo, sizeof(stSendEmo));
 	};
 };
 
+struct stAfter : public stHeader
+{
+	uint32 UID;
+	uint32 Result;
+
+	stAfter()
+	{
+		UID = 0;
+		Result = 0;
+		SetHeader(prAfter, sizeof(stAfter));
+	};
+};

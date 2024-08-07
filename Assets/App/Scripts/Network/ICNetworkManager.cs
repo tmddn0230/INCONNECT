@@ -19,6 +19,7 @@ using Unity.VisualScripting;
 using Newtonsoft.Json;
 using UnityEngine.Analytics;
 using System.Drawing;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class ICNetworkManager : MonoBehaviour
 {
@@ -55,7 +56,7 @@ public class ICNetworkManager : MonoBehaviour
         if (bSocketReady) return;
 
         // HOST / PORT
-        string ip = "192.168.0.6";
+        string ip = "58.127.66.152";
         int port = 25000;
 
         // Create Socket 
@@ -125,7 +126,7 @@ public class ICNetworkManager : MonoBehaviour
 
 
 
-    void Send(string data)
+    void TestSend(string data)
     {
         if (!bSocketReady) return;
 
@@ -139,110 +140,38 @@ public class ICNetworkManager : MonoBehaviour
         mWriter.Flush();
     }
 
+    
+
     public void SendPacket_Bone(ICPacket_Bone packet)
     {
-        /*
-        using (MemoryStream ms = new MemoryStream())
-        {
-            BinaryWriter writer = new BinaryWriter(ms);
-
-            // Header First
-            // Convert UID to network byte order (big endian)
-            //writer.Write(BitConverter.GetBytes(System.Net.IPAddress.HostToNetworkOrder(packet.packetHeader.nID)));
-            writer.Write(packet.packetHeader.nID);
-            writer.Write(packet.packetHeader.nSize);
-            writer.Write(packet.packetHeader.nType);
-            writer.Write(packet.packetHeader.nCheckSum);
-
-            writer.Write(packet.UID);
-
-            // Write positions and rotations
-            // Body
-            writefloat(packet.headPosition, writer);
-            writefloat(packet.headRotation, writer);
-            writefloat(packet.neckPosition, writer);
-            writefloat(packet.neckRotation, writer);
-            writefloat(packet.chestPosition, writer);
-            writefloat(packet.chestRotation, writer);
-            writefloat(packet.spinePosition, writer);
-            writefloat(packet.spineRotation, writer);
-            writefloat(packet.hipPosition, writer);
-            writefloat(packet.hipRotation, writer);
-            // HAND
-            writefloat(packet.leftUpperArmPosition, writer);
-            writefloat(packet.leftUpperArmRotation, writer);
-            writefloat(packet.leftLowerArmPosition, writer);
-            writefloat(packet.leftLowerArmRotation, writer);
-            writefloat(packet.leftHandPosition, writer);
-            writefloat(packet.leftHandRotation, writer);
-            writefloat(packet.rightUpperArmPosition, writer);
-            writefloat(packet.rightUpperArmRotation, writer);
-            writefloat(packet.rightLowerArmPosition, writer);
-            writefloat(packet.rightLowerArmRotation, writer);
-            writefloat(packet.rightHandPosition, writer);
-            writefloat(packet.rightHandRotation, writer);
-            // FOOT
-            writefloat(packet.leftFootPosition, writer);
-            writefloat(packet.leftFootRotation, writer);
-            writefloat(packet.rightHandPosition, writer);
-            writefloat(packet.rightHandRotation, writer);
-
-            byte[] data = ms.ToArray();
-            packet.SetMotionProtocol(data.Length);
-            ms.SetLength(0);
-
-            // Final Packet
-            writer.Write(packet.packetHeader.nID);
-            writer.Write(packet.packetHeader.nSize);
-            writer.Write(packet.packetHeader.nType);
-            writer.Write(packet.packetHeader.nCheckSum);
-
-            writer.Write(packet.UID);
-
-            // Write positions and rotations
-            // Body
-            writefloat(packet.headPosition, writer);
-            writefloat(packet.headRotation, writer);
-            writefloat(packet.neckPosition, writer);
-            writefloat(packet.neckRotation, writer);
-            writefloat(packet.chestPosition, writer);
-            writefloat(packet.chestRotation, writer);
-            writefloat(packet.spinePosition, writer);
-            writefloat(packet.spineRotation, writer);
-            writefloat(packet.hipPosition, writer);
-            writefloat(packet.hipRotation, writer);
-            // HAND
-            writefloat(packet.leftUpperArmPosition, writer);
-            writefloat(packet.leftUpperArmRotation, writer);
-            writefloat(packet.leftLowerArmPosition, writer);
-            writefloat(packet.leftLowerArmRotation, writer);
-            writefloat(packet.leftHandPosition, writer);
-            writefloat(packet.leftHandRotation, writer);
-            writefloat(packet.rightUpperArmPosition, writer);
-            writefloat(packet.rightUpperArmRotation, writer);
-            writefloat(packet.rightLowerArmPosition, writer);
-            writefloat(packet.rightLowerArmRotation, writer);
-            writefloat(packet.rightHandPosition, writer);
-            writefloat(packet.rightHandRotation, writer);
-            // FOOT
-            writefloat(packet.leftFootPosition, writer);
-            writefloat(packet.leftFootRotation, writer);
-            writefloat(packet.rightHandPosition, writer);
-            writefloat(packet.rightHandRotation, writer);
-
-            byte[] finalData = ms.ToArray();
-          
-
-
-            mStream.Write(finalData, 0, finalData.Length);
-        }
-        */
         int size = packet.packetHeader.nSize;
         byte[] bytes = new byte[size];
         IntPtr ptr = Marshal.AllocHGlobal(size);
         try
         {
             Marshal.StructureToPtr(packet, ptr, true);
+            Marshal.Copy(ptr, bytes, 0, size);
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(ptr);
+        }
+
+        SendPacketQueue.Enqueue(bytes);
+    }
+
+    void SendPacket_Attract(int score)
+    {
+        ICPacket_First packetStruct = new ICPacket_First();
+        packetStruct.SetAttractProtocol();
+        packetStruct.Score = score;
+
+        int size = packetStruct.packetHeader.nSize;
+        byte[] bytes = new byte[size];
+        IntPtr ptr = Marshal.AllocHGlobal(size);
+        try
+        {
+            Marshal.StructureToPtr(packetStruct, ptr, true);
             Marshal.Copy(ptr, bytes, 0, size);
         }
         finally
@@ -272,13 +201,88 @@ public class ICNetworkManager : MonoBehaviour
         SendPacketQueue.Enqueue(bytes);
     }
 
-
-    void writefloat(float[] values, BinaryWriter writer)
+    void SendPacket_After(int result)
     {
-        for (int i = 0; i < values.Length; i++)
+        ICPacket_After packetStruct = new ICPacket_After();
+        packetStruct.SetAfterProtocol();
+        packetStruct.Result = result;
+
+        int size = packetStruct.packetHeader.nSize;
+        byte[] bytes = new byte[size];
+        IntPtr ptr = Marshal.AllocHGlobal(size);
+        try
         {
-            writer.Write(values[i]);
+            Marshal.StructureToPtr(packetStruct, ptr, true);
+            Marshal.Copy(ptr, bytes, 0, size);
         }
+        finally
+        {
+            Marshal.FreeHGlobal(ptr);
+        }
+
+        SendPacketQueue.Enqueue(bytes);
+    }
+
+    void SendPacket_Transform(ICPacket_Transform packet)
+    {
+        int size = packet.packetHeader.nSize;
+        byte[] bytes = new byte[size];
+        IntPtr ptr = Marshal.AllocHGlobal(size);
+        try
+        {
+            Marshal.StructureToPtr(packet, ptr, true);
+            Marshal.Copy(ptr, bytes, 0, size);
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(ptr);
+        }
+
+        SendPacketQueue.Enqueue(bytes);
+    }
+
+    void SendPacket_MBTI(int mbti)
+    {
+        ICPacket_MBTI packetStruct = new ICPacket_MBTI();
+        packetStruct.SetMBTIProtocol();
+        packetStruct.MBTI = mbti;
+
+        int size = packetStruct.packetHeader.nSize;
+        byte[] bytes = new byte[size];
+        IntPtr ptr = Marshal.AllocHGlobal(size);
+        try
+        {
+            Marshal.StructureToPtr(packetStruct, ptr, true);
+            Marshal.Copy(ptr, bytes, 0, size);
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(ptr);
+        }
+
+        SendPacketQueue.Enqueue(bytes);
+    }
+
+    void SendPacket_EMO(int emotion)
+    {
+        ICPacket_EMO packetStruct = new ICPacket_EMO();
+        packetStruct.SetEmoProtocol();
+        packetStruct.EMO = emotion;
+
+        int size = packetStruct.packetHeader.nSize;
+        byte[] bytes = new byte[size];
+        IntPtr ptr = Marshal.AllocHGlobal(size);
+        try
+        {
+            Marshal.StructureToPtr(packetStruct, ptr, true);
+            Marshal.Copy(ptr, bytes, 0, size);
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(ptr);
+        }
+
+        SendPacketQueue.Enqueue(bytes);
     }
 
     float[] readfloat(float[] values, BinaryReader reader)
@@ -372,9 +376,23 @@ public class ICNetworkManager : MonoBehaviour
             case enProtocol.prLoginAck:
                 RecvLoginAck(header);
                 break;
-            case enProtocol.prMatchingReq:
+            case enProtocol.prMatchingAck:
                 break;
-
+            case enProtocol.prMBTI:
+                RecvMBTI(header);
+                break;
+            case enProtocol.prAfter:
+                RecvAfter(header);
+                break;
+            case enProtocol.prSendEmo:
+                RecvEmotion(header);
+                break;
+            case enProtocol.prTransform:
+                RecvTransformData(header);
+                break;
+            case enProtocol.prFirstAttract:
+                RecvFisrtAttract(header);
+                break;
         }
     }
 
@@ -423,12 +441,6 @@ public class ICNetworkManager : MonoBehaviour
 
             ICClient.Instance.Actor_Spawn(UID, Result);
         }
-
-
-        // uid 가 1이면 남자 스폰 
-        
-        //         2면 여자 스폰
-
     }
 
     void RecvBoneData(StHeader header)
@@ -532,6 +544,8 @@ public class ICNetworkManager : MonoBehaviour
         using (MemoryStream ms = new MemoryStream(buffer))
         {
             BinaryReader reader = new BinaryReader(ms);
+
+            
         }
     }
     void RecvFisrtAttract(StHeader header)
@@ -551,8 +565,14 @@ public class ICNetworkManager : MonoBehaviour
         using (MemoryStream ms = new MemoryStream(buffer))
         {
             BinaryReader reader = new BinaryReader(ms);
+
+            // UID 읽기
+            int UID = reader.ReadInt32();
+            // Score 읽기
+            int Score = reader.ReadInt32();
         }
     }
+
     void RecvMBTI(StHeader header)
     {
         int headerSize = Marshal.SizeOf(typeof(StHeader));
@@ -570,6 +590,11 @@ public class ICNetworkManager : MonoBehaviour
         using (MemoryStream ms = new MemoryStream(buffer))
         {
             BinaryReader reader = new BinaryReader(ms);
+
+            // UID 읽기
+            int UID = reader.ReadInt32();
+            // MBTI 읽기
+            int MBTI = reader.ReadInt32();
         }
     }
     void RecvEmotion(StHeader header)
@@ -589,6 +614,36 @@ public class ICNetworkManager : MonoBehaviour
         using (MemoryStream ms = new MemoryStream(buffer))
         {
             BinaryReader reader = new BinaryReader(ms);
+
+            // UID 읽기
+            int UID = reader.ReadInt32();
+            // EMO 읽기
+            int EMO = reader.ReadInt32();
+        }
+    }
+
+    void RecvAfter(StHeader header)
+    {
+        int headerSize = Marshal.SizeOf(typeof(StHeader));
+        int totalSize = header.nSize - headerSize;
+        // 전체 패킷 데이터를 읽습니다
+        byte[] buffer = new byte[totalSize];
+        int bytesRead = mStream.Read(buffer, 0, totalSize);
+
+        if (bytesRead != totalSize)
+        {
+            throw new Exception("Failed to read packet data");
+        }
+
+        // 데이터를 MemoryStream에 저장하고 읽어 들입니다
+        using (MemoryStream ms = new MemoryStream(buffer))
+        {
+            BinaryReader reader = new BinaryReader(ms);
+
+            // UID 읽기
+            int UID = reader.ReadInt32();
+            // Result 읽기
+            int Result = reader.ReadInt32();
         }
     }
 

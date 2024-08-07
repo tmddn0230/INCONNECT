@@ -165,7 +165,7 @@ namespace Packet
         public void SetEmoProtocol()
         {
             int size;
-            size = Marshal.SizeOf(packetHeader) + sizeof(int); // 멤버에 따라 수정
+            size = Marshal.SizeOf(packetHeader) + sizeof(int) + sizeof(int); // 멤버에 따라 수정
             packetHeader = new StHeader();
             packetHeader.SetHeader((int)enProtocol.prSendEmo, size);
         }
@@ -181,7 +181,7 @@ namespace Packet
         public void SetAfterProtocol()
         {
             int size;
-            size = Marshal.SizeOf(packetHeader) + sizeof(int); // 멤버에 따라 수정
+            size = Marshal.SizeOf(packetHeader) + sizeof(int) + sizeof(int); // 멤버에 따라 수정
             packetHeader = new StHeader();
             packetHeader.SetHeader((int)enProtocol.prAfter, size);
         }

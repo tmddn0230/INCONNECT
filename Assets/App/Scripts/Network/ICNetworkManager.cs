@@ -119,9 +119,19 @@ public class ICNetworkManager : MonoBehaviour
         {
             Login("","");
         }
+        else if (Input.GetKeyDown(KeyCode.Alpha3))
+        {
+            ICPacket_EMO packetStruct = new ICPacket_EMO();
+            //packetStruct.MakeBone();
+            packetStruct.SetEmoProtocol();
+
+            SendPacket_EMO(3);
+        }
 
         if (mStream != null && mStream.DataAvailable)
         {
+
+
             ReceiveData();
         }
     }
@@ -299,7 +309,14 @@ public class ICNetworkManager : MonoBehaviour
             Marshal.FreeHGlobal(ptr);
         }
 
-        SendPacketQueue.Enqueue(bytes);
+        //SendPacketQueue.Enqueue(bytes);
+
+        using (MemoryStream ms = new MemoryStream())
+        {
+            BinaryWriter writer = new BinaryWriter(ms);
+            mStream.Write(bytes, 0, bytes.Length);
+        }
+
     }
 
     float[] readfloat(float[] values, BinaryReader reader)

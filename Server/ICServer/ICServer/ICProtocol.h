@@ -42,6 +42,7 @@ enum enProtocol
 	prFirstAttract,
 	prMBTI,
 	prSendEmo,
+	prAfter,
 	
 	PROTOCOL_END
 };

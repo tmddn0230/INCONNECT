@@ -238,7 +238,7 @@ void User::RecvLoginReq(char* packet)
 	memset(buffer, 0x00, sizeof(buffer));
 
 
-	ack.UID = g_User.GetUserCount();
+	ack.UID = mIndex;
 	ack.Result = 1; // SUCCESS
 	memcpy( buffer, &ack, sizeof(stLoginAck));
 	g_User.SendAll(buffer, sizeof(stLoginAck));
@@ -251,7 +251,7 @@ void User::RecvBoneData(char* packet)
 
 	// Test ³¡³ª¸é 
 	// SendOther()
-	g_User.SendAll(packet, sizeof(stBoneData));
+	g_User.SendOther(req.UID, packet, sizeof(stBoneData));
 	puts("Recv And Send All Packet");
 }
 
@@ -259,7 +259,7 @@ void User::RecvTransPos(char* packet)
 {
 	stTransform req;
 	memcpy(&req, packet, sizeof(stTransform));
-	g_User.SendAll(packet, sizeof(stTransform));
+	g_User.SendOther(req.UID, packet, sizeof(stTransform));
 }
 
 
@@ -268,25 +268,26 @@ void User::RecvMatchReq(char* packet)
 {
 	stMatchingReq req;
 	memcpy(&req, packet, sizeof(stMatchingReq));
-
-
-
+	g_User.SendOther(req.UID, packet, sizeof(stTransform));
 }
 
 void User::RecvFirstAtr(char* packet)
 {
 	stFirstAttract req;
 	memcpy(&req, packet, sizeof(stFirstAttract));
+	g_User.SendOther(req.UID, packet, sizeof(stFirstAttract));
 }
 
 void User::RecvMBTI(char* packet)
 {
 	stMBTI req;
 	memcpy(&req, packet, sizeof(stMBTI));
+	g_User.SendOther(req.UID, packet, sizeof(stMBTI));
 }
 
 void User::RecvEmoticon(char* packet)
 {
 	stSendEmo req;
 	memcpy(&req, packet, sizeof(stSendEmo));
+	g_User.SendOther(req.UID, packet, sizeof(stSendEmo));
 }

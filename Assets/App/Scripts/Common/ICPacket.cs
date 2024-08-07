@@ -69,6 +69,7 @@ namespace Packet
     {
 
         public StHeader packetHeader;
+        public int UID;
         float[] pos;
         float[] rot;
 
@@ -126,6 +127,7 @@ namespace Packet
     public class ICPacket_First
     {
         public StHeader packetHeader;
+        public int UID;
         public int Score;
         
         public void SetAttractProtocol()
@@ -142,6 +144,7 @@ namespace Packet
     public class ICPacket_MBTI
     {
         public StHeader packetHeader;
+        public int UID;
         public int MBTI; // mbti 1 ~ 12
         public void SetMBTIProtocol()
         {
@@ -157,6 +160,7 @@ namespace Packet
     public class ICPacket_EMO
     {
         public StHeader packetHeader;
+        public int UID;
         public int EMO;
         public void SetEmoProtocol()
         {
@@ -172,6 +176,7 @@ namespace Packet
     public class ICPacket_After
     {
         public StHeader packetHeader;
+        public int UID;
         public int Result;
         public void SetAfterProtocol()
         {

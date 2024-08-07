@@ -19,6 +19,7 @@ using Unity.VisualScripting;
 using Newtonsoft.Json;
 using UnityEngine.Analytics;
 using System.Drawing;
+using UnityEngine.SocialPlatforms.Impl;
 
 public class ICNetworkManager : MonoBehaviour
 {
@@ -159,15 +160,18 @@ public class ICNetworkManager : MonoBehaviour
         SendPacketQueue.Enqueue(bytes);
     }
 
-    void SendPacket_Attract(ICPacket_First packet)
+    void SendPacket_Attract(int score)
     {
+        ICPacket_First packetStruct = new ICPacket_First();
+        packetStruct.SetAttractProtocol();
+        packetStruct.Score = score;
 
-        int size = packet.packetHeader.nSize;
+        int size = packetStruct.packetHeader.nSize;
         byte[] bytes = new byte[size];
         IntPtr ptr = Marshal.AllocHGlobal(size);
         try
         {
-            Marshal.StructureToPtr(packet, ptr, true);
+            Marshal.StructureToPtr(packetStruct, ptr, true);
             Marshal.Copy(ptr, bytes, 0, size);
         }
         finally
@@ -197,14 +201,18 @@ public class ICNetworkManager : MonoBehaviour
         SendPacketQueue.Enqueue(bytes);
     }
 
-    void SendPacket_After(ICPacket_After packet)
+    void SendPacket_After(int result)
     {
-        int size = packet.packetHeader.nSize;
+        ICPacket_After packetStruct = new ICPacket_After();
+        packetStruct.SetAfterProtocol();
+        packetStruct.Result = result;
+
+        int size = packetStruct.packetHeader.nSize;
         byte[] bytes = new byte[size];
         IntPtr ptr = Marshal.AllocHGlobal(size);
         try
         {
-            Marshal.StructureToPtr(packet, ptr, true);
+            Marshal.StructureToPtr(packetStruct, ptr, true);
             Marshal.Copy(ptr, bytes, 0, size);
         }
         finally
@@ -233,14 +241,18 @@ public class ICNetworkManager : MonoBehaviour
         SendPacketQueue.Enqueue(bytes);
     }
 
-    void SendPacket_MBTI(ICPacket_MBTI packet)
+    void SendPacket_MBTI(int mbti)
     {
-        int size = packet.packetHeader.nSize;
+        ICPacket_MBTI packetStruct = new ICPacket_MBTI();
+        packetStruct.SetMBTIProtocol();
+        packetStruct.MBTI = mbti;
+
+        int size = packetStruct.packetHeader.nSize;
         byte[] bytes = new byte[size];
         IntPtr ptr = Marshal.AllocHGlobal(size);
         try
         {
-            Marshal.StructureToPtr(packet, ptr, true);
+            Marshal.StructureToPtr(packetStruct, ptr, true);
             Marshal.Copy(ptr, bytes, 0, size);
         }
         finally
@@ -251,14 +263,18 @@ public class ICNetworkManager : MonoBehaviour
         SendPacketQueue.Enqueue(bytes);
     }
 
-    void SendPacket_EMO(ICPacket_EMO packet)
+    void SendPacket_EMO(int emotion)
     {
-        int size = packet.packetHeader.nSize;
+        ICPacket_EMO packetStruct = new ICPacket_EMO();
+        packetStruct.SetEmoProtocol();
+        packetStruct.EMO = emotion;
+
+        int size = packetStruct.packetHeader.nSize;
         byte[] bytes = new byte[size];
         IntPtr ptr = Marshal.AllocHGlobal(size);
         try
         {
-            Marshal.StructureToPtr(packet, ptr, true);
+            Marshal.StructureToPtr(packetStruct, ptr, true);
             Marshal.Copy(ptr, bytes, 0, size);
         }
         finally
@@ -363,14 +379,19 @@ public class ICNetworkManager : MonoBehaviour
             case enProtocol.prMatchingAck:
                 break;
             case enProtocol.prMBTI:
+                RecvMBTI(header);
                 break;
             case enProtocol.prAfter:
+                RecvAfter(header);
                 break;
             case enProtocol.prSendEmo:
+                RecvEmotion(header);
                 break;
             case enProtocol.prTransform:
+                RecvTransformData(header);
                 break;
             case enProtocol.prFirstAttract:
+                RecvFisrtAttract(header);
                 break;
         }
     }
@@ -545,6 +566,8 @@ public class ICNetworkManager : MonoBehaviour
         {
             BinaryReader reader = new BinaryReader(ms);
 
+            // UID 읽기
+            int UID = reader.ReadInt32();
             // Score 읽기
             int Score = reader.ReadInt32();
         }
@@ -568,6 +591,8 @@ public class ICNetworkManager : MonoBehaviour
         {
             BinaryReader reader = new BinaryReader(ms);
 
+            // UID 읽기
+            int UID = reader.ReadInt32();
             // MBTI 읽기
             int MBTI = reader.ReadInt32();
         }
@@ -590,6 +615,8 @@ public class ICNetworkManager : MonoBehaviour
         {
             BinaryReader reader = new BinaryReader(ms);
 
+            // UID 읽기
+            int UID = reader.ReadInt32();
             // EMO 읽기
             int EMO = reader.ReadInt32();
         }
@@ -614,6 +641,8 @@ public class ICNetworkManager : MonoBehaviour
             BinaryReader reader = new BinaryReader(ms);
 
             // UID 읽기
+            int UID = reader.ReadInt32();
+            // Result 읽기
             int Result = reader.ReadInt32();
         }
     }

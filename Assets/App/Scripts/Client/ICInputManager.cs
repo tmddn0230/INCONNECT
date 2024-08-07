@@ -30,14 +30,15 @@ public class ICInputManager : MonoBehaviour
     public ICMBTI MBTI;
     public ICResult Result;
     //public int m_UID = 0;
-    private void OnEnable()
-    {
-        mOVRCam.SetActive(true);
-    }
-    private void OnDisable()
-    {
-        mOVRCam.SetActive(false);   
-    }
+    //private void OnEnable()
+    //{
+    //    if(Ismine)
+    //    mOVRCam.SetActive(true);
+    //}
+    //private void OnDisable()
+    //{
+    //    mOVRCam.SetActive(false);   
+    //}
     //public static ICInputManager Instance
     //{
     //    get

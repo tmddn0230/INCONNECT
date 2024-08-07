@@ -9,6 +9,9 @@ public class ICUIEvents : MonoBehaviour
     public Image fadeImage; // 페이드 효과를 위한 이미지
     public float fadeDuration = 1f; // 페이드 인/아웃 지속 시간
 
+    public GameObject Man;
+    public GameObject Women;
+
     private void Awake()
     {
         // 싱글톤 패턴을 사용하여 인스턴스를 설정
@@ -40,6 +43,9 @@ public class ICUIEvents : MonoBehaviour
 
         // 씬 로드 완료 대기
         yield return new WaitForSeconds(0.5f);
+        // 남자 여자 캐릭터 각각 transform 고정
+        Women.transform.position = new Vector3 (15.37f, 0f, -10.35f);
+        Man.transform.position = new Vector3 (15.39f,   0f,- 12.56f);
 
         // 페이드 인
         yield return StartCoroutine(Fade(1f, 0f));
@@ -74,4 +80,6 @@ public class ICUIEvents : MonoBehaviour
         // "ICPrototype_Cafe" 씬으로 전환
         LoadScene("ICPrototype_Cafe");
     }
+
+
 }

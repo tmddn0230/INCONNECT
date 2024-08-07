@@ -84,6 +84,19 @@ public class ICNetworkManager : MonoBehaviour
 
     }
 
+    public static ICNetworkManager Instance;
+    private void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+        }
+        else
+        {
+            Destroy(gameObject);
+        }
+    }
     // Start is called before the first frame update
     void Start()
     {
@@ -160,7 +173,7 @@ public class ICNetworkManager : MonoBehaviour
         SendPacketQueue.Enqueue(bytes);
     }
 
-    void SendPacket_Attract(int score)
+    public void SendPacket_Attract(int score)
     {
         ICPacket_First packetStruct = new ICPacket_First();
         packetStruct.SetAttractProtocol();
@@ -201,7 +214,7 @@ public class ICNetworkManager : MonoBehaviour
         SendPacketQueue.Enqueue(bytes);
     }
 
-    void SendPacket_After(int result)
+    public void SendPacket_After(int result)
     {
         ICPacket_After packetStruct = new ICPacket_After();
         packetStruct.SetAfterProtocol();
@@ -241,7 +254,7 @@ public class ICNetworkManager : MonoBehaviour
         SendPacketQueue.Enqueue(bytes);
     }
 
-    void SendPacket_MBTI(int mbti)
+   public void SendPacket_MBTI(int mbti)
     {
         ICPacket_MBTI packetStruct = new ICPacket_MBTI();
         packetStruct.SetMBTIProtocol();
@@ -263,7 +276,7 @@ public class ICNetworkManager : MonoBehaviour
         SendPacketQueue.Enqueue(bytes);
     }
 
-    void SendPacket_EMO(int emotion)
+    public void SendPacket_EMO(int emotion)
     {
         ICPacket_EMO packetStruct = new ICPacket_EMO();
         packetStruct.SetEmoProtocol();
@@ -570,6 +583,24 @@ public class ICNetworkManager : MonoBehaviour
             int UID = reader.ReadInt32();
             // Score 읽기
             int Score = reader.ReadInt32();
+
+
+            for (int i = 0; i < ICClient.Instance.spawnedActors.Length; i++)
+            {
+                ICInputManager input = ICClient.Instance.spawnedActors[i].GetComponent<ICInputManager>();
+
+                if (input.Ismine == true)
+                {
+
+                    input.Slider.Receive_Score(Score);
+
+                    if (Score < 70)
+                        return;
+
+                    input.UseEmo = true;
+                }
+            }
+
         }
     }
 
@@ -586,6 +617,7 @@ public class ICNetworkManager : MonoBehaviour
             throw new Exception("Failed to read packet data");
         }
 
+
         // 데이터를 MemoryStream에 저장하고 읽어 들입니다
         using (MemoryStream ms = new MemoryStream(buffer))
         {
@@ -595,6 +627,16 @@ public class ICNetworkManager : MonoBehaviour
             int UID = reader.ReadInt32();
             // MBTI 읽기
             int MBTI = reader.ReadInt32();
+
+            for (int i = 0; i < ICClient.Instance.spawnedActors.Length; i++)
+            {
+                ICInputManager input = ICClient.Instance.spawnedActors[i].GetComponent<ICInputManager>();
+
+                if (input.Ismine == true)
+                {
+                    input.MBTI.Receive_MBTI(MBTI);
+                }
+            }
         }
     }
     void RecvEmotion(StHeader header)
@@ -619,6 +661,18 @@ public class ICNetworkManager : MonoBehaviour
             int UID = reader.ReadInt32();
             // EMO 읽기
             int EMO = reader.ReadInt32();
+
+            for(int i = 0; i < ICClient.Instance.spawnedActors.Length; i++)
+            {
+                ICInputManager input = ICClient.Instance.spawnedActors[i].GetComponent<ICInputManager>();
+
+                if(input.Ismine == false)
+                {
+                    input.ICEmoticon.gameObject.SetActive(true);
+                    input.ICEmoticon.ReceiveEmotion(EMO);
+                }
+            }
+            
         }
     }
 
@@ -644,6 +698,18 @@ public class ICNetworkManager : MonoBehaviour
             int UID = reader.ReadInt32();
             // Result 읽기
             int Result = reader.ReadInt32();
+
+
+            for (int i = 0; i < ICClient.Instance.spawnedActors.Length; i++)
+            {
+                ICInputManager input = ICClient.Instance.spawnedActors[i].GetComponent<ICInputManager>();
+
+                if (input.Ismine == true)
+                {
+                    input.Result.Receive_Result(Result);
+                }
+            }
+
         }
     }
 

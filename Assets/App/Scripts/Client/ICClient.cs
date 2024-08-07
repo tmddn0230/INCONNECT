@@ -11,7 +11,7 @@ public class ICClient : MonoBehaviour
 
     #region 사람들 스폰 하는 로직
     public GameObject[] mActors;
-    private GameObject[] spawnedActors; // 소환된 액터들의 배열
+    public GameObject[] spawnedActors; // 소환된 액터들의 배열
 
 
     public void Actor_Spawn(int uid, int Result)
@@ -19,7 +19,7 @@ public class ICClient : MonoBehaviour
         // Result가 1이 아닌 경우 리턴
         if (Result != 1)
             return;
-
+        uid = uid + 1;
         // UID가 유효한 범위인지 확인
         if (uid < 1 || uid > mActors.Length)
             return;
@@ -41,6 +41,14 @@ public class ICClient : MonoBehaviour
             if (spawnedActors[i] == null)
             {
                 spawnedActors[i] = Instantiate(mActors[i], Vector3.zero, Quaternion.identity);
+               
+                
+                if (spawnedActors[i].gameObject.name == "Man")
+                {
+                    ICUIEvents.Instance.Man = spawnedActors[i].gameObject;
+                }
+                else
+                    ICUIEvents.Instance.Women = spawnedActors[i].gameObject;
             }
         }
 
@@ -76,18 +84,7 @@ public class ICClient : MonoBehaviour
 
     #endregion
 
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-
+    
 
 
 }

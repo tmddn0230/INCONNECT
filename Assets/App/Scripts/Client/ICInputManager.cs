@@ -24,8 +24,11 @@ public class ICInputManager : MonoBehaviour
 
     public GameObject mOVRCam;
     public bool Ismine = false;
-
+    public bool UseEmo = false;
     public ICEmoticon ICEmoticon;
+    public ICSlider Slider;
+    public ICMBTI MBTI;
+    public ICResult Result;
     //public int m_UID = 0;
     private void OnEnable()
     {
@@ -94,6 +97,8 @@ public class ICInputManager : MonoBehaviour
             // A Button (Open Emotion panel)
             if (OVRInput.GetUp(OVRInput.Button.One, OVRInput.Controller.RTouch))
             {
+                if (UseEmo == false)
+                    return;
                 bool bIsActive = mEmotionPanel.activeSelf;
                 mEmotionPanel.SetActive(!bIsActive);
             }

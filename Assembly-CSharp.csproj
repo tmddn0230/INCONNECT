@@ -61,6 +61,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Assets\CoffeeShopStarterPack\Scripts\ProductGameObject.cs" />
+    <Compile Include="Assets\App\Scripts\Client\ICMBTI.cs" />
     <Compile Include="Assets\_Barking_Dog\Common Scripts\MouseLook.cs" />
     <Compile Include="Assets\App\Scripts\Client\ICCharacterAnim.cs" />
     <Compile Include="Assets\App\Scripts\Client\ICActorDataSynchronizer.cs" />
@@ -76,6 +77,8 @@
     <Compile Include="Assets\App\Scripts\Network\ICVoiceManager.cs" />
     <Compile Include="Assets\App\Scripts\Client\ICUIEvents.cs" />
     <Compile Include="Assets\App\Scripts\Client\ICMotionReciever.cs" />
+    <Compile Include="Assets\App\Scripts\Client\ICResult.cs" />
+    <Compile Include="Assets\App\Scripts\Client\ICSlider.cs" />
     <Compile Include="Assets\CoffeeShopStarterPack\Scripts\Utilities\BasicGameEvents.cs" />
     <Compile Include="Assets\CoffeeShopStarterPack\Scripts\PlayerSlots.cs" />
     <Compile Include="Assets\App\Scripts\Client\ICEmoticon.cs" />

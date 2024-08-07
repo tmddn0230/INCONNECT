@@ -11,8 +11,8 @@ public class ICEmoticon : MonoBehaviour
 
 
     public Material mat;
-    
-    
+
+    public Sprite[] emoticons;
     
     private void OnEnable()
     {
@@ -62,8 +62,16 @@ public class ICEmoticon : MonoBehaviour
     {
         gameObject.SetActive(false);
     }
+
+    // 받아오는 쪽
+    public void ReceiveEmotion(int i)
+    {
+        DefalutEmoAnim(emoticons[i]);    
+    }
+
+    // 보내주는 쪽 
     public void SendEmoticon(int i)
     {
-        //ICNetworkManager.Instance.SendPacket_EMO(i);
+        ICNetworkManager.Instance.SendPacket_EMO(i);
     }
 }

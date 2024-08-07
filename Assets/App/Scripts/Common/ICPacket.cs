@@ -14,7 +14,11 @@ namespace Packet
         prConnectAck,
         prLoginReq, prLoginAck,
         prBoneData,
-        prENTPORTAL,
+        prTransform,
+        prMatchingReq, prMatchingAck,
+        prFirstAttract,
+        prMBTI,
+        prSendEmo,
 
         PROTOCOL_END
     };
@@ -54,43 +58,33 @@ namespace Packet
             size = Marshal.SizeOf(packetHeader) + Marshal.SizeOf(bonedata) + sizeof(int);
             packetHeader = new StHeader();
             packetHeader.SetHeader((int)enProtocol.prBoneData, size);
+        }     
+        
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [System.Serializable]
+    public struct ICPacket_Transform
+    {
+
+        public StHeader packetHeader;
+        float[] pos;
+        float[] rot;
+
+        public void Init()
+        {
+            pos = new float[3];
+            rot = new float[4];
         }
 
-        // Dummy Make Bone Func, 제거예정
-        public void MakeBone()
+        public void SetMotionProtocol()
         {
-           // headPosition = new float[] {0, 0, 0};
-           // headRotation = new float[] {0, 0, 0, 1 };
-           // neckPosition = new float[] { 0, 0, 1 };
-           // neckRotation = new float[] { 0, 0, 1, 1 };
-           // chestPosition = new float[] { 0, 1, 1 };
-           // chestRotation = new float[] { 0, 1, 1, 1 };
-           // spinePosition = new float[] { 1, 1, 1 };
-           // spineRotation = new float[] { 1, 1, 1, 1 };
-           // hipPosition = new float[] { 0, 0, -1 };
-           // hipRotation = new float[] { 0, 0, -1, 1 };
-           //
-           //
-           //
-           // leftUpperArmPosition = new float[] { 0, 1, -1 };
-           // leftUpperArmRotation = new float[] { 0, 1, -1, 1 };
-           // leftLowerArmPosition = new float[] { 1, 1, -1 };
-           // leftLowerArmRotation = new float[] { 1, 1, -1, 1 };
-           // leftHandPosition = new float[] { 0, -1, -1 };
-           // leftHandRotation = new float[] { 0, -1, -1, 1 };
-           // rightUpperArmPosition = new float[] { 1, -1, -1 };
-           // rightUpperArmRotation = new float[] { -1, -1, -1, 1 };
-           // rightLowerArmPosition = new float[] { -1, -1, -1 };
-           // rightLowerArmRotation = new float[] { 0, 0, 2, 1 };
-           // rightHandPosition = new float[] { 0, 0, 2 };
-           // rightHandRotation = new float[] { 0, 1, 2, 1 };
-           //
-           //
-           // leftFootPosition = new float[] { 0, 1, 2 };
-           // leftFootRotation = new float[] { 1, 1, 2, 1 };
-           // rightFootPosition = new float[] { 1, 1, 2 };
-           // rightFootRotation = new float[] { 1, 2, 2, 1 };
+            int size;
+            size = Marshal.SizeOf(packetHeader) + (sizeof(float) * pos.Length)  + (sizeof(float) * rot.Length);
+            packetHeader = new StHeader();
+            packetHeader.SetHeader((int)enProtocol.prTransform, size);
         }
+
     }
 
     [StructLayout(LayoutKind.Sequential, Pack = 1)]
@@ -110,6 +104,64 @@ namespace Packet
             packetHeader.SetHeader((int)enProtocol.prLoginReq, size);
         }
     }
+
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [System.Serializable]
+    public class ICPacket_Match
+    {
+        public StHeader packetHeader;
+        public void SetMatchProtocol()
+        {
+            int size;
+            size = Marshal.SizeOf(packetHeader) + sizeof(int) + sizeof(int); // 멤버에 따라 수정
+            packetHeader = new StHeader();
+            packetHeader.SetHeader((int)enProtocol.prMatchingReq, size);
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [System.Serializable]
+    public class ICPacket_First
+    {
+        public StHeader packetHeader;
+        public void SetAttractProtocol()
+        {
+            int size;
+            size = Marshal.SizeOf(packetHeader) + sizeof(int) + sizeof(int); // 멤버에 따라 수정
+            packetHeader = new StHeader();
+            packetHeader.SetHeader((int)enProtocol.prFirstAttract, size);
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [System.Serializable]
+    public class ICPacket_MBTI
+    {
+        public StHeader packetHeader;
+        public void SetMBTIProtocol()
+        {
+            int size;
+            size = Marshal.SizeOf(packetHeader) + sizeof(int) + sizeof(int); // 멤버에 따라 수정
+            packetHeader = new StHeader();
+            packetHeader.SetHeader((int)enProtocol.prMBTI, size);
+        }
+    }
+
+    [StructLayout(LayoutKind.Sequential, Pack = 1)]
+    [System.Serializable]
+    public class ICPacket_EMO
+    {
+        public StHeader packetHeader;
+        public void SetEmoProtocol()
+        {
+            int size;
+            size = Marshal.SizeOf(packetHeader) + sizeof(int) + sizeof(int); // 멤버에 따라 수정
+            packetHeader = new StHeader();
+            packetHeader.SetHeader((int)enProtocol.prSendEmo, size);
+        }
+    }
+
 
     public class ICPacketQueue
     {

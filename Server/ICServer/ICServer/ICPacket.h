@@ -56,43 +56,76 @@ struct stBoneData : public stHeader
 	};
 };
 
-struct stEntPortal : public stHeader
+struct stTransform : public stHeader
 {
-	stEntPortal()
+	uint32 UID;
+	float v[3];
+	float q[4];
+
+	stTransform()
 	{
-		SetHeader(prENTPORTAL, sizeof(stEntPortal));
+		UID = 0;
+		memset(v, 0, sizeof(v));
+		memset(q, 0, sizeof(q));
+		SetHeader(prTransform, sizeof(stTransform));
 	};
 };
 
 
-struct stTestPacket
+struct stMatchingReq : public stHeader
 {
-	int UID;
-	float v;
-	float v1;
-	float v2;
-	float v3;
-	float v4;
-	float v5;
-	float v6;
-	float v7;
-	float v8;
-	float q;
-	float q1;
-	float q2;
-	float q3;
-	float q4;
-	float q5;
-	float q6;
-	float q7;
-	float q8;
-	float q9;
-	float q10;
-	float q11;
-	float q12;
-	float q13;
-	float q14;
-	float q15;
+	uint32 UID;
 
-
+	stMatchingReq()
+	{
+		UID = 0;
+		SetHeader(prMatchingReq, sizeof(stMatchingReq));
+	};
 };
+
+
+struct stMatchingAck : public stHeader
+{
+	uint32 Result;
+
+	stMatchingAck()
+	{
+		Result = 0;
+		SetHeader(prMatchingAck, sizeof(stMatchingAck));
+	};
+};
+
+struct stFirstAttract : public stHeader
+{
+	uint32 Score;
+
+	stFirstAttract()
+	{
+		Score = 0;
+		SetHeader(prFirstAttract, sizeof(stFirstAttract));
+	};
+};
+
+struct stMBTI : public stHeader
+{
+	uint32 Score;
+
+	stMBTI()
+	{
+		Score = 0;
+		SetHeader(prMBTI, sizeof(stMBTI));
+	};
+};
+
+
+struct stSendEmo : public stHeader
+{
+	uint32 EmoNumber;
+
+	stSendEmo()
+	{
+		EmoNumber = 0;
+		SetHeader(prSendEmo, sizeof(stSendEmo));
+	};
+};
+

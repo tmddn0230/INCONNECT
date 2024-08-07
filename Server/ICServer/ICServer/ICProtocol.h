@@ -37,8 +37,12 @@ enum enProtocol
 	prConnectAck,
 	prLoginReq, prLoginAck,
 	prBoneData,
-	prENTPORTAL,
-
+	prTransform,
+	prMatchingReq, prMatchingAck,
+	prFirstAttract,
+	prMBTI,
+	prSendEmo,
+	
 	PROTOCOL_END
 };
 

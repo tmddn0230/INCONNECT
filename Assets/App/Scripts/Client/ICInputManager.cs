@@ -23,7 +23,8 @@ public class ICInputManager : MonoBehaviour
     private static ICInputManager instance;
 
     public GameObject mOVRCam;
-
+    public bool Ismine = false;
+    //public int m_UID = 0;
     private void OnEnable()
     {
         mOVRCam.SetActive(true);
@@ -32,24 +33,24 @@ public class ICInputManager : MonoBehaviour
     {
         mOVRCam.SetActive(false);   
     }
-    public static ICInputManager Instance
-    {
-        get
-        {
-            if (instance == null)
-            {
-                instance = FindObjectOfType<ICInputManager>();
+    //public static ICInputManager Instance
+    //{
+    //    get
+    //    {
+    //        if (instance == null)
+    //        {
+    //            instance = FindObjectOfType<ICInputManager>();
 
-                if (instance == null)
-                {
-                    instance = new GameObject("ICInputManager").AddComponent<ICInputManager>();
-                }
+    //            if (instance == null)
+    //            {
+    //                instance = new GameObject("ICInputManager").AddComponent<ICInputManager>();
+    //            }
 
-                DontDestroyOnLoad(instance.gameObject);
-            }
-            return instance;
-        }
-    }
+    //            DontDestroyOnLoad(instance.gameObject);
+    //        }
+    //        return instance;
+    //    }
+    //}
 
     void Start()
     {
@@ -61,6 +62,8 @@ public class ICInputManager : MonoBehaviour
 
     void Update()
     {
+        if (Ismine)
+            return;
         // Controller Input Update
         MetaInputController();
     }

@@ -53,7 +53,10 @@ public class ICClient : MonoBehaviour
                 if (inputManager != null)
                 {
                     // m_UID와 같은 번호에서 소환된 프리팹만 활성화
-                    inputManager.enabled = (i == m_UID - 1);
+                    inputManager.Ismine = (i == m_UID - 1);
+                   
+                    //if(inputManager.m_UID == 0)
+                    //    inputManager.m_UID = uid;
                 }
             }
         }

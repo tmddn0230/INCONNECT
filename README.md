@@ -75,7 +75,7 @@
 
 [Client]
 <details>
-<summary> NetworkManager - 유승우 </summary><br>
+<summary> NetworkManager - 유승우 </summary>
    ICNetworkManager<br>
    <details>
      <summary> 변수 선언 </summary>

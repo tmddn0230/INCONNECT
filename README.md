@@ -81,9 +81,9 @@
 
 
     <details>
-  <summary> 변수 선언 </summary>
+    <summary> 변수 선언 </summary>
     
-  ```csharp
+    ```csharp
 
     // Login Info
     int UID;
@@ -112,9 +112,9 @@
     ICPacketReciever packetReciever;
     ICMotionReciever motionReciever;
 
-```
+    ```
 
-   </details>  
+    </details>  
 
 
 </details>

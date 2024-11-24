@@ -79,7 +79,7 @@
  
   &nbsp;&nbsp;&nbsp;&nbsp;ICNetworkManager
 
-<div style="margin-left: 20px;">
+<div style="padding-left: 20px;">
   <details>
   <summary> 변수 선언 </summary>
     

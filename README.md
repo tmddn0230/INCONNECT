@@ -79,9 +79,7 @@
    ICNetworkManager<br>
 
    <details>
-    <div style="margin-left: 20px;">
      <summary> 변수 선언 </summary>
-    </div>
   ```csharp
 
     // Login Info

@@ -49,7 +49,8 @@
 
 
 
-💻 주요 기능 및 코드]
+💻 주요 기능 및 코드
+
 [Server]
 <details>
 <summary> ICServer : Main Socket Server </summary>
@@ -67,7 +68,7 @@
 <summary> ICVoiceServer : Voice Server </summary>
 
    1. UDP Socket
-</detail
+</details>
 
 [Client]
 <details>

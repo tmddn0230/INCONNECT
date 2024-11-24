@@ -78,9 +78,8 @@
 <summary> NetworkManager - 유승우 </summary>
 
   &nbsp;&nbsp;&nbsp;&nbsp;ICNetworkManager<br>
-  
-  <details>
-     &nbsp;&nbsp;&nbsp;&nbsp;<summary> 변수 선언 </summary>
+  &nbsp;&nbsp;&nbsp;&nbsp;<details>
+  <summary> 변수 선언 </summary>
     
   ```csharp
 

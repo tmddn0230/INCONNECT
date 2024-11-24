@@ -147,6 +147,55 @@ public void ConnectToServer()
 
 }
 ```
+  &nbsp;&nbsp;&nbsp;&nbsp; Queue 에 Send Packet 쌓기
+```csharp  
+    public void SendPacket_Bone(ICPacket_Bone packet)
+    {
+        int size = packet.packetHeader.nSize;
+        byte[] bytes = new byte[size];
+        IntPtr ptr = Marshal.AllocHGlobal(size);
+        try
+        {
+            Marshal.StructureToPtr(packet, ptr, true);
+            Marshal.Copy(ptr, bytes, 0, size);
+        }
+        finally
+        {
+            Marshal.FreeHGlobal(ptr);
+        }
+
+        SendPacketQueue.Enqueue(bytes);
+    }
+```
+  &nbsp;&nbsp;&nbsp;&nbsp; Recv 
+```csharp
+    private void ReceiveData()
+    {
+        try
+        {
+            // 헤더 크기를 읽습니다
+            int headerSize = Marshal.SizeOf(typeof(StHeader));
+            byte[] headerBuffer = new byte[headerSize];
+            int bytesRead = mStream.Read(headerBuffer, 0, headerSize);
+
+            if (bytesRead != headerSize)
+            {
+                throw new Exception("Failed to read packet header");
+            }
+
+            // 헤더 정보를 읽어 패킷 크기를 확인합니다
+            StHeader header = ByteArrayToStructure<StHeader>(headerBuffer);
+
+            // 헤더의 프로토콜에 따라 
+            Parse(header);
+        }
+        catch (Exception e)
+        {
+            Debug.Log("Receive Error: " + e.Message);
+        }
+    }
+```
+
 </details>
 
 <details>

@@ -76,9 +76,9 @@
 [Client]
 <details>
 <summary> NetworkManager - 유승우 </summary>
+
  
-  &nbsp;&nbsp;&nbsp;&nbsp;ICNetworkManager
-   
+  &nbsp;&nbsp;&nbsp;ICNetworkManager   
   &nbsp;&nbsp;&nbsp;&nbsp;변수 선언
     
 ```csharp
@@ -111,6 +111,42 @@
     ICMotionReciever motionReciever;
 ```
 
+  &nbsp;&nbsp;&nbsp;&nbsp; 서버 접속
+```csharp
+public void ConnectToServer()
+{
+    // if Client Connected aready, return
+    if (bSocketReady) return;
+
+    // HOST / PORT
+    string ip = "58.127.66.152";
+    int port = 25000;
+
+    // Create Socket 
+    try
+    {
+        mSocket = new TcpClient(ip, port);
+        mStream = mSocket.GetStream();
+        mWriter = new StreamWriter(mStream);
+        mReader = new StreamReader(mStream);
+        sendThread = new Thread(ProcessSendPackets);
+        sendThread.Start();
+        SendPacketQueue = new ICPacketQueue();
+
+        bRun = true;
+        bSocketReady = true;
+
+        // Receiver
+        motionReciever = new ICMotionReciever();
+        motionReciever.Init();
+    }
+    catch(Exception e)
+    {
+        Debug.Log($"Error: Can't Create Client Socket {e}");
+    }
+
+}
+```
 </details>
 
 <details>

@@ -167,6 +167,52 @@ public void ConnectToServer()
         SendPacketQueue.Enqueue(bytes);
     }
 ```
+## &nbsp;&nbsp;&nbsp;&nbsp; Send Packet 처리 
+```csharp
+    private void ProcessSendPackets()
+    {
+        Debug.Log("Processing thread started.");
+        while (bRun)
+        {
+
+            if(SendPacketQueue == null) continue;
+            byte[] dequeueBytes;
+            dequeueBytes = SendPacketQueue.Dequeue();
+            if (dequeueBytes != null)
+            {
+                // 여기서 Send
+                Debug.Log("Packet");
+                using (MemoryStream ms = new MemoryStream())
+                {
+                    BinaryWriter writer = new BinaryWriter(ms);
+                    mStream.Write(dequeueBytes, 0, dequeueBytes.Length);
+                }
+            }
+            else
+            {
+                Debug.Log("Packet Empty");
+            }
+
+         
+            Thread.Sleep(10);
+        }
+
+    }
+
+```
+
+## &nbsp;&nbsp;&nbsp;&nbsp;Convert Structure
+```csharp
+    private T ByteArrayToStructure<T>(byte[] bytes) where T : struct
+    {
+        IntPtr ptr = Marshal.AllocHGlobal(bytes.Length);
+        Marshal.Copy(bytes, 0, ptr, bytes.Length);
+        T obj = (T)Marshal.PtrToStructure(ptr, typeof(T));
+        Marshal.FreeHGlobal(ptr);
+        return obj;
+    }
+
+```
 ## &nbsp;&nbsp;&nbsp;&nbsp; Recv 
 ```csharp
     private void ReceiveData()
@@ -200,6 +246,117 @@ public void ConnectToServer()
 
 <details>
 <summary> MotionSynchronizing - 유승우 </summary>
+
+### &nbsp;&nbsp;&nbsp;ICNetworkManager   
+## &nbsp;&nbsp;&nbsp;&nbsp;Parse by Packet
+    
+```csharp
+
+    void Parse(StHeader header)
+    {
+        switch ((enProtocol)header.nID)
+        {
+            case enProtocol.prConnectAck:
+                RecvConnectAck(header);
+                break;
+            case enProtocol.prBoneData:
+                RecvBoneData(header);
+                break;
+            case enProtocol.prLoginAck:
+                RecvLoginAck(header);
+                break;
+            case enProtocol.prMatchingAck:
+                break;
+            case enProtocol.prMBTI:
+                RecvMBTI(header);
+                break;
+            case enProtocol.prAfter:
+                RecvAfter(header);
+                break;
+            case enProtocol.prSendEmo:
+                RecvEmotion(header);
+                break;
+            case enProtocol.prTransform:
+                RecvTransformData(header);
+                break;
+            case enProtocol.prFirstAttract:
+                RecvFisrtAttract(header);
+                break;
+        }
+    }
+```
+## &nbsp;&nbsp;&nbsp;&nbsp;RecvBoneData
+   
+```csharp
+float[] readfloat(float[] values, BinaryReader reader)
+{
+        values = new float[values.Length];
+
+        for(int i = 0; i < values.Length; i++)
+        {
+            values[i] = reader.ReadSingle();
+        }
+        return values;
+}
+
+void RecvBoneData(StHeader header)
+{
+     int headerSize = Marshal.SizeOf(typeof(StHeader));
+     int totalSize = header.nSize - headerSize;
+     // 전체 패킷 데이터를 읽습니다
+     byte[] buffer = new byte[totalSize];
+     int bytesRead = mStream.Read(buffer, 0, totalSize);
+
+     if (bytesRead != totalSize)
+     {
+         throw new Exception("Failed to read packet data");
+     }
+
+     // 데이터를 MemoryStream에 저장하고 읽어 들입니다
+     using (MemoryStream ms = new MemoryStream(buffer))
+     {
+         BinaryReader reader = new BinaryReader(ms);
+
+         // UID 읽기
+         int UID = reader.ReadInt32();
+
+         CoreBoneData bonepacket = new CoreBoneData();
+         bonepacket.Init();
+
+         bonepacket.headPosition = readfloat(bonepacket.headPosition, reader);
+         bonepacket.headRotation = readfloat(bonepacket.headRotation, reader);
+         bonepacket.neckPosition = readfloat(bonepacket.neckPosition, reader);
+         bonepacket.neckRotation = readfloat(bonepacket.neckRotation, reader);
+         bonepacket.chestPosition = readfloat(bonepacket.chestPosition, reader);
+         bonepacket.chestRotation = readfloat(bonepacket.chestRotation, reader);
+         bonepacket.spinePosition = readfloat(bonepacket.spinePosition, reader);
+         bonepacket.spineRotation = readfloat(bonepacket.spineRotation, reader);
+         bonepacket.hipPosition = readfloat(bonepacket.hipPosition, reader);
+         bonepacket.hipRotation = readfloat(bonepacket.hipRotation, reader);
+                    // Hands
+         bonepacket.leftUpperArmPosition = readfloat(bonepacket.leftUpperArmPosition, reader);
+         bonepacket.leftUpperArmRotation = readfloat(bonepacket.leftUpperArmRotation, reader);
+         bonepacket.leftLowerArmPosition = readfloat(bonepacket.leftLowerArmPosition, reader);
+         bonepacket.leftLowerArmRotation = readfloat(bonepacket.leftLowerArmRotation, reader);
+         bonepacket.leftHandPosition = readfloat(bonepacket.leftHandPosition, reader);
+         bonepacket.leftHandRotation = readfloat(bonepacket.leftHandRotation, reader);
+         bonepacket.rightUpperArmPosition = readfloat(bonepacket.rightUpperArmPosition, reader);
+         bonepacket.rightUpperArmRotation = readfloat(bonepacket.rightUpperArmRotation, reader);
+         bonepacket.rightLowerArmPosition = readfloat(bonepacket.rightLowerArmPosition, reader);
+         bonepacket.rightLowerArmRotation = readfloat(bonepacket.rightLowerArmRotation, reader);
+         bonepacket.rightHandPosition = readfloat(bonepacket.rightHandPosition, reader);
+         bonepacket.rightHandRotation = readfloat(bonepacket.rightHandRotation, reader);
+                    // Foots
+         bonepacket.leftFootPosition = readfloat(bonepacket.leftFootPosition, reader);
+         bonepacket.leftFootRotation = readfloat(bonepacket.leftFootRotation, reader);
+         bonepacket.rightFootPosition = readfloat(bonepacket.rightFootPosition, reader);
+         bonepacket.rightFootRotation = readfloat(bonepacket.rightFootRotation, reader);
+
+         motionReciever.AddDictionary(UID, bonepacket);
+     }
+}
+
+```
 </details>
 
 &nbsp;

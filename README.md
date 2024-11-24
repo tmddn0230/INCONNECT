@@ -52,7 +52,7 @@
 💻 주요 기능 및 코드
 
 [Server]
-///<details>
+&ensp;<details>
 <summary>ICServer : Main Socket Server </summary>
 
   1. TCP Socket
@@ -61,7 +61,7 @@
 
 
 
-///<details>
+&ensp;<details>
 <summary>ICVoiceServer : Voice Server </summary>
 
    1. UDP Socket

@@ -52,8 +52,8 @@
 💻 주요 기능 및 코드
 
 [Server]
-<details>
-&ensp;<summary>ICServer : Main Socket Server </summary>
+///<details>
+<summary>ICServer : Main Socket Server </summary>
 
   1. TCP Socket
   2. Event Select
@@ -61,8 +61,8 @@
 
 
 
-<details>
-&ensp;<summary>ICVoiceServer : Voice Server </summary>
+///<details>
+<summary>ICVoiceServer : Voice Server </summary>
 
    1. UDP Socket
 </detail

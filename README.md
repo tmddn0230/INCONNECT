@@ -77,9 +77,7 @@
 <details>
 <summary> NetworkManager - 유승우 </summary>
 
- <div style="margin-left: 20px;">
-   ICNetworkManager<br>
- </div>
+  &nbsp;&nbsp;&nbsp;ICNetworkManager<br>
   
   <details>
      <summary> 변수 선언 </summary>

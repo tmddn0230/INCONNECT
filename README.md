@@ -82,7 +82,7 @@
    <details>
     <summary> 변수 선언 </summary>
     
-    ```cpp
+```cpp
 
     // Login Info
     int UID;
@@ -110,9 +110,7 @@
     // Receiver
     ICPacketReciever packetReciever;
     ICMotionReciever motionReciever;
-
-    ```
-
+```
 </details>  
 
 

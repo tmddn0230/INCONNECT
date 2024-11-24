@@ -78,8 +78,8 @@
 <summary> NetworkManager - 유승우 </summary>
 
  
-  &nbsp;&nbsp;&nbsp;ICNetworkManager   
-  &nbsp;&nbsp;&nbsp;&nbsp;변수 선언
+###&nbsp;&nbsp;&nbsp;ICNetworkManager   
+##&nbsp;&nbsp;&nbsp;&nbsp;변수 선언
     
 ```csharp
 
@@ -111,7 +111,7 @@
     ICMotionReciever motionReciever;
 ```
 
-  &nbsp;&nbsp;&nbsp;&nbsp; 서버 접속
+##&nbsp;&nbsp;&nbsp;&nbsp; 서버 접속
 ```csharp
 public void ConnectToServer()
 {
@@ -147,7 +147,7 @@ public void ConnectToServer()
 
 }
 ```
-  &nbsp;&nbsp;&nbsp;&nbsp; Queue 에 Send Packet 쌓기
+##&nbsp;&nbsp;&nbsp;&nbsp; Queue 에 Send Packet 쌓기
 ```csharp  
     public void SendPacket_Bone(ICPacket_Bone packet)
     {
@@ -167,7 +167,7 @@ public void ConnectToServer()
         SendPacketQueue.Enqueue(bytes);
     }
 ```
-  &nbsp;&nbsp;&nbsp;&nbsp; Recv 
+##&nbsp;&nbsp;&nbsp;&nbsp; Recv 
 ```csharp
     private void ReceiveData()
     {

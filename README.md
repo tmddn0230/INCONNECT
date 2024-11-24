@@ -78,3 +78,8 @@
 <details>
 <summary> MotionSynchronizing - 유승우 </summary>
 </details>
+
+
+# <u> 🖌️ UI 및 디자인 - 김준혁 <u>
+
+

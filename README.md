@@ -61,8 +61,12 @@
 
 
 
+<details>
+   <summary>ICVoiceServer : Voice Server </summary>
+
+   1. UDP Socket
+</detail
 
 
-ICVoiceServer : Voice Server
 
-1. UDP Socket
+

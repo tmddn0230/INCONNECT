@@ -78,7 +78,7 @@
 <summary> NetworkManager - 유승우 </summary>
    ICNetworkManager<br>
 
-<details>
+   <details>
      <summary> 변수 선언 </summary>
   ```csharp
 
@@ -110,7 +110,7 @@
     ICMotionReciever motionReciever;
 
 ```
-</details>
+   </details>
 
 
 </details>

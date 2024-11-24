@@ -81,7 +81,7 @@
 
 
   ><details>
-  <summary> 변수 선언 </summary>
+  >><summary> 변수 선언 </summary>
     
   ```csharp
 

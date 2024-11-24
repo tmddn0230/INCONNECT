@@ -82,7 +82,7 @@
    <details>
     <summary> 변수 선언 </summary>
     
-    ```csharp
+    ```c#
 
     // Login Info
     int UID;

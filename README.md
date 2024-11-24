@@ -76,9 +76,9 @@
 [Client]
 <details>
 <summary> NetworkManager - 유승우 </summary><br>
-ICNetworkManager<br>
- <details>
-  <summary> 변수 선언 </summary>
+   ICNetworkManager<br>
+   <details>
+     <summary> 변수 선언 </summary>
   
   ```csharp
 

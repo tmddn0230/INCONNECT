@@ -78,10 +78,11 @@
 <summary> NetworkManager - 유승우 </summary>
  
   &nbsp;&nbsp;&nbsp;&nbsp;ICNetworkManager
-   ><details>
-    <summary> 변수 선언 </summary>
+   <details>
     
-    >>```csharp
+    ><summary> 변수 선언 </summary>
+    
+    ```csharp
 
     // Login Info
     int UID;

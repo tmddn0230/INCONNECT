@@ -66,16 +66,13 @@
 ```
 </details>
 
-&nbsp;
-
-&nbsp;
-
 <details>
 <summary> ICVoiceServer : Voice Server </summary>
 
    1. UDP Socket
 </details>
-
+&nbsp;
+&nbsp;
 [Client]
 <details>
 <summary> NetworkManager - 유승우 </summary>

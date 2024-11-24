@@ -61,9 +61,7 @@
   1. TCP Socket
   2. Event Select
 
-```csharp
 
-```
 </details>
 
 <details>
@@ -77,7 +75,42 @@
 
 [Client]
 <details>
-<summary> NetworkManager - 유승우 </summary>
+<summary> NetworkManager - 유승우 </summary><br>
+ICNetworkManager<br>
+ <details>
+  <summary> 변수 선언 </summary><br>
+  ```csharp
+    // Login Info
+    int UID;
+
+    // Test InputField UI
+    public InputField mIPInput, mPortInput, mNickInput;
+    private ICPacketQueue SendPacketQueue;
+
+    String mClientName;
+
+    bool bSocketReady;
+    TcpClient mSocket;
+    NetworkStream mStream;
+    StreamWriter mWriter;
+    StreamReader mReader;
+
+    // Thread 
+    Thread sendThread;
+    Thread recvThread;
+    Queue<byte[]> sendQueue;
+    Queue<byte[]> recvQueue;
+    bool bRun = false;
+    object queueLock = new object();
+
+    // Receiver
+    ICPacketReciever packetReciever;
+    ICMotionReciever motionReciever;
+
+```
+ </details>
+
+
 </details>
 
 <details>

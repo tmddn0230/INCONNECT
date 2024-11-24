@@ -80,7 +80,7 @@
   &nbsp;&nbsp;&nbsp;&nbsp;ICNetworkManager
 
 
-  #<details>
+      <details>
   <summary> 변수 선언 </summary>
     
   ```csharp

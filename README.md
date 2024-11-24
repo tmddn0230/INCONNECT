@@ -52,11 +52,14 @@
 💻 주요 기능 및 코드
 
 [Server]
+<details>
+   <summary>ICServer : Main Socket Server </summary>
 
-ICServer : Main Socket Server 
+  1. TCP Socket
+  2. Event Select
+</details>
 
-1. TCP Socket
-2. Event Select
+
 
 
 

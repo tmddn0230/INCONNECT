@@ -9,7 +9,7 @@
 
 📰 기획 
 <details>
-<summary>💞두근두근 버츄얼 랜덤 매칭 데이팅💞</summary>
+<summary> 💞두근두근 버츄얼 랜덤 매칭 데이팅💞</summary>
   
 [구현 목록] 
 1. 아바타(유니티 에셋 스토어에 있는 무료 캐릭터 1종)
@@ -49,24 +49,31 @@
 
 
 
-💻 주요 기능 및 코드
-
+💻 주요 기능 및 코드]
 [Server]
-&ensp;<details>
-<summary>ICServer : Main Socket Server </summary>
-
+<details>
+<summary> ICServer : Main Socket Server </summary>
   1. TCP Socket
   2. Event Select
+
+```csharp
+
+```
 </details>
 
 
 
-&ensp;<details>
-<summary>ICVoiceServer : Voice Server </summary>
+<details>
+<summary> ICVoiceServer : Voice Server </summary>
 
    1. UDP Socket
 </detail
 
+[Client]
+<details>
+<summary> NetworkManager </summary>
+</details>
 
-
-
+<details>
+<summary> MotionSynchronizing </summary>
+</details>

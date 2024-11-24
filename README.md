@@ -61,7 +61,7 @@
 
 ## &nbsp;&nbsp;&nbsp;&nbsp;사용 패킷과 패킷관리 큐
     
-```csharp
+```cpp
 
 namespace Packet
 {
@@ -284,10 +284,381 @@ namespace Packet
 
 <details>
 <summary> ICServer : Main Socket Server - 유승우 </summary>
-  1. TCP Socket
-  2. Event Select
+
+ 서버 특징<br>
+  1. TCP Socket<br>
+  2. Event Select<br>
+## &nbsp;&nbsp;&nbsp;&nbsp;소켓 초기화 및 서버 실행
+    
+```cpp
+    // Start WinSock
+    WinSockStart();
+
+    // Create Event
+    int i;
+    for (i = 0; i < MAX_USER; ++i)
+    {
+        gEvent[i] = WSACreateEvent();
+    }
+
+    // Accept Thread
+    gServerHandle = (HANDLE)_beginthreadex(NULL, 0, ServerThread, NULL, 0, NULL);
+
+    // User Thread
+    for (i = 0; i < MAX_THREAD; ++i)
+    {
+        gUserHandle[i] = NULL;
+        gUserHandle[i] = (HANDLE)_beginthreadex(NULL, 0, UserThread, (void*)i, 0, NULL);
+    }
+```
+## &nbsp;&nbsp;&nbsp;&nbsp;서버 쓰레드
+    
+```cpp
+unsigned __stdcall ServerThread(void* pArg)
+{
+    char szBuffer[1024];	memset(szBuffer, 0x00, sizeof(szBuffer));
+
+    gServerSocket = socket(AF_INET, SOCK_STREAM, 0);
+
+    if (gServerSocket == INVALID_SOCKET)
+    {
+        sprintf(szBuffer, "Socket error code=%x", WSAGetLastError());
+        puts(szBuffer);
+        return 0;
+    }
+
+    //나겔알고리즘 비적용
+    BOOL opt_val = TRUE;
+    setsockopt(gServerSocket, IPPROTO_TCP, TCP_NODELAY, (char*)&opt_val, sizeof(opt_val));
+    DWORD size = 0x8000;
+    setsockopt(gServerSocket, SOL_SOCKET, SO_SNDBUF, (const char*)&size, sizeof(size));
+    setsockopt(gServerSocket, SOL_SOCKET, SO_RCVBUF, (const char*)&size, sizeof(size));
+
+    struct sockaddr_in sa;
+    memset(&sa, 0, sizeof(sa));
+    sa.sin_family = AF_INET;
+    sa.sin_addr.s_addr = htonl(INADDR_ANY);
+    sa.sin_port = htons(gServerPort);
+
+    //Bind
+    if (::bind(gServerSocket, (struct sockaddr*)&sa, sizeof(sa)) != 0)
+    {
+        sprintf(szBuffer, "bind error code=%d", WSAGetLastError());
+        puts(szBuffer);
+        return 0;
+    }
+
+    //Listen
+    if (listen(gServerSocket, 500) != 0)
+    {
+        sprintf(szBuffer, "listen error code=%d", WSAGetLastError());
+        puts(szBuffer);
+        return 0;
+    }
+
+    while (gServerHandle)
+    {
+        struct sockaddr_in ca;
+        int clientAddressLength = sizeof(ca);
+        int nLength = sizeof(ca);
+
+        SOCKET socket = accept(gServerSocket, (struct sockaddr*)&ca, &nLength);
+
+        if (socket == INVALID_SOCKET)
+        {
+            closesocket(socket);
+
+            puts("Failed Socket Create");
+            continue;
+        }
+        //유저등록에 실패하면 소켓을 닫아버린다..
+
+       if (g_User.AddUser(socket, ca) == false)
+       {
+           closesocket(socket);
+       
+           printf("ADDUser Fail %d.%d.%d.%d",
+               ca.sin_addr.S_un.S_un_b.s_b1,
+               ca.sin_addr.S_un.S_un_b.s_b2,
+               ca.sin_addr.S_un.S_un_b.s_b3,
+               ca.sin_addr.S_un.S_un_b.s_b4);
+       }
+
+        Sleep(1);
+    }
+    return 0;
+
+}
+```
+
+## &nbsp;&nbsp;&nbsp;&nbsp;유저 쓰레드
+    
+```cpp
+unsigned __stdcall UserThread(void* pArg)
+{
+    WSANETWORKEVENTS events;
+
+    DWORD dwReturn = 0, dwRet = 0;
+
+    //int nread;
+    int ThreadArray = (int)pArg;
+    int UserArray = (ThreadArray * gUserper);
+    int i = 0;
+    int inum = 0;
+    //Log("UserThread %d", ThreadArray );
+    while (gUserHandle[ThreadArray])
+    {
+        //64개..
+        dwReturn = WSAWaitForMultipleEvents(gUserper, &gEvent[UserArray], FALSE, WSA_INFINITE, FALSE);
+
+        if (dwReturn != WSA_WAIT_FAILED)
+        {
+            for (i = 0; i < gUserper; ++i)
+            {
+                inum = UserArray + i;
+
+                // UserManager
+                if (g_User.mUser[inum].mhSocket)
+                {
+                
+                    dwRet = WSAEnumNetworkEvents(g_User.mUser[inum].mhSocket, gEvent[inum], &events);
+                
+                    if (dwRet == 0)
+                    {
+                        //FD_READ EVENT 면.
+                        if ((events.lNetworkEvents & FD_READ) == FD_READ)
+                        {
+                            g_User.mUser[inum].Recv();
+                        }
+                        if ((events.lNetworkEvents & FD_WRITE) == FD_WRITE)
+                        {
+                            g_User.mUser[inum].FlushSendBuffer();
+                        }
+                        if ((events.lNetworkEvents & FD_CLOSE) == FD_CLOSE)
+                        {
+                            //접속 종료 처리
+                            //Log("g_User.DelUser( inum %d );", inum );
+                            g_User.DelUser(inum);
+                        }
+                    }
+                }
+            }
+        }
+        Sleep(1);
+    }
+    return 0;
+}
+
+```
+
+## &nbsp;&nbsp;&nbsp;&nbsp;Send & Recv
+    
+```cpp
+bool User::AddSendBuffer(char* buff, int size)
+{
+	if( buff == NULL)
+	   return false;
+	if (mSendSize + size >= MAX_SEND)
+	{
+		Clear();
+		return false;
+	}
+
+	memcpy(&mSendBuffer[mSendSize], buff, size);
+	mSendSize += size;
+	return true;
+}
+
+void User::Send(char* buff, int size)
+{
+	if (mhSocket == NULL) {
+		return;
+	}
+	if (buff == NULL)
+		return;
+
+	int sendsize, error = 0;
+	if (mSendSize <= 0) {// Only once Case : Queue Empty
+
+		do {
+			sendsize = send(mhSocket, buff, size, 0);
+
+			if (sendsize < 0) {
+				AddSendBuffer(buff, size);
+				break;
+			}
+			else
+			{
+					buff = buff + sendsize; // 버퍼의 위치를 send 한 만큼 뒤로 밈
+					size -= sendsize;       // 패킷 사이즈를 보낸만큼 빼준다.
+			}
+		} while (size);                 // size가 0이 될 때까지 보낸다.
+
+	}
+	else {// 큐가 비어있지 않다면 보낼 데이터를 큐에 쌓고, 
+			// 버퍼를 초과하지 않았다면 FlushBuffer();를 호출해서 처리한다.
+		if (AddSendBuffer(buff, size)) {
+			FlushSendBuffer();
+		}
+		else {
+			FlushSendBuffer();
+		}
+	}
+}
+
+void User::Recv()
+{
+	if (mhSocket == NULL)
+		return;
+	if (mIndex < 0)
+		return;
+
+	int size = 0;
+	if (mRecvWrite < MAX_RECV)
+		size = recv(mhSocket, &mRecvBuffer[mRecvWrite], MAX_RECV - mRecvWrite, 0);
+	    //stTestPacket header;
+	    //memcpy(&header, mRecvBuffer, sizeof(stTestPacket));
+
+	if (size > 0) {
+		// ADD at Current RecvBuffer's Length
+		mRecvWrite += size;
+
+		if (mRecvWrite >= MAX_RECV) {
+			puts("User Buffer is Full");
+		}
+
+		while (mRecvWrite >= HEADSIZE) {
+			stHeader header;
+			memcpy(&header, mRecvBuffer, HEADSIZE);
+			// Why didn't use ?
+			//if (header.nID >= PROTOCOL_END || header.nID <= PROTOCOL_START) {
+			//	Clear();
+			//	EmptyRecvBuffer();
+			//	return;
+			//}
 
 
+			if (header.nSize <= 0) {
+				EmptyRecvBuffer();
+				return;
+			}
+			int iCheckSum = header.nType + header.nSize + header.nID;
+			if (header.nCheckSum != iCheckSum) {
+				EmptyRecvBuffer();
+				return;
+			}
+
+			if (mRecvWrite >= header.nSize) {
+				Parse(header.nID, mRecvBuffer);
+				memmove(mRecvBuffer, &mRecvBuffer[header.nSize], mRecvWrite);
+				mRecvWrite -= header.nSize;
+			}
+			else {
+				break;
+			}
+		}
+	}
+}
+
+void UserManager::SendOther(int index, char* buff, int size)
+{
+	int i;
+	for (i = 0; i < MAX_USER; ++i)
+	{
+		if (i == index)
+			continue;
+
+		mUser[i].Send(buff, size);
+	}
+}
+
+void UserManager::SendAll(char* buff, int size)
+{
+	int i;
+	for (i = 0; i < MAX_USER; ++i)
+	{
+		mUser[i].Send(buff, size);
+	}
+}
+```
+## &nbsp;&nbsp;&nbsp;&nbsp;유저 관리
+    
+```cpp
+int UserManager::GetUserCount()
+{
+	int i;
+	int nCount = 0;
+	for (i = 0; i < MAX_USER; ++i)
+	{
+		if (mUser[i].mhSocket == NULL)
+			continue;
+		nCount++;
+	}
+	return nCount;
+}
+
+bool UserManager::AddUser(SOCKET sock, sockaddr_in ip)
+{
+	int i;
+	for (i = 0; i < MAX_USER; ++i)
+	{
+		if (mUser[i].mhSocket != NULL)
+			continue;
+
+		WSAResetEvent(gEvent[i]);
+		WSAEventSelect(sock, gEvent[i], FD_READ | FD_WRITE | FD_CLOSE);
+
+		BOOL opt_val = TRUE;
+		setsockopt(sock, IPPROTO_TCP, TCP_NODELAY, (char*)&opt_val, sizeof(opt_val));
+
+		DWORD recvsize = MAX_RECV;
+		DWORD sendsize = MAX_SEND;
+		setsockopt(sock, SOL_SOCKET, SO_SNDBUF, (const char*)&recvsize, sizeof(recvsize));
+		setsockopt(sock, SOL_SOCKET, SO_RCVBUF, (const char*)&sendsize, sizeof(sendsize));
+
+		struct linger Linger;
+		Linger.l_onoff = 1; //링거 끄기, Time Wait
+		Linger.l_linger = 0;
+		setsockopt(sock, SOL_SOCKET, SO_LINGER, (const char*)&Linger, sizeof(Linger));
+
+
+		mUser[i].Init(i, sock, ip);
+
+		printf("AddUser: %d %d.%d.%d.%d", i,
+			ip.sin_addr.S_un.S_un_b.s_b1,
+			ip.sin_addr.S_un.S_un_b.s_b2,
+			ip.sin_addr.S_un.S_un_b.s_b3,
+			ip.sin_addr.S_un.S_un_b.s_b4);
+
+		return true;
+
+	}
+	return false;
+}
+
+void UserManager::DelUser(int index)
+{
+	if (index < 0 || index >= MAX_USER)
+		return;
+
+	mUser[index].LogOut();
+}
+
+User* UserManager::GetUser(int uid)
+{
+	if (uid <= 0)
+		return NULL;
+
+	int i;
+	for (i = 0; i < MAX_USER; ++i)
+	{
+		if (mUser[i].mUID == uid)
+			return &mUser[i];
+	}
+	return NULL;
+}
+
+```
 </details>
 
 <details>

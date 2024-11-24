@@ -77,10 +77,11 @@
 <details>
 <summary> NetworkManager - 유승우 </summary>
    ICNetworkManager<br>
-<div style="margin-left: 20px;">
+
    <details>
+    <div style="margin-left: 20px;">
      <summary> 변수 선언 </summary>
-  
+    </div>
   ```csharp
 
     // Login Info
@@ -112,7 +113,7 @@
 
 ```
  </details>
-</div>
+
 
 </details>
 

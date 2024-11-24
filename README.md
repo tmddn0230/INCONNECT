@@ -79,10 +79,9 @@
  
   &nbsp;&nbsp;&nbsp;&nbsp;ICNetworkManager
    
-   <details>
-    <summary> 변수 선언 </summary>
+  &nbsp;&nbsp;&nbsp;&nbsp;변수 선언
     
-&nbsp;```csharp
+```csharp
 
     // Login Info
     int UID;
@@ -111,8 +110,6 @@
     ICPacketReciever packetReciever;
     ICMotionReciever motionReciever;
 ```
-</details>  
-
 
 </details>
 

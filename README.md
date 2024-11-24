@@ -77,9 +77,9 @@
 <details>
 <summary> NetworkManager - 유승우 </summary>
    ICNetworkManager<br>
-
    <details>
      <summary> 변수 선언 </summary>
+    
   ```csharp
 
     // Login Info
@@ -110,6 +110,7 @@
     ICMotionReciever motionReciever;
 
 ```
+
    </details>
 
 

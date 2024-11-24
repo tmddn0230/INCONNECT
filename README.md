@@ -55,7 +55,7 @@
 &nbsp;
 # <u>💻 주요 기능 및 코드<u>
 
-[Server] 
+[Server]  : C++
 <details>
  <summary> ICPacket : Used Packets - 유승우</summary>
 
@@ -299,7 +299,7 @@ namespace Packet
 &nbsp;
 &nbsp;
 
-[Client]
+[Client] : C#
 <details>
 <summary> NetworkManager - 유승우 </summary>
 

@@ -1050,6 +1050,111 @@ int main()
 
 [Client] : C#
 <details>
+ <summary> VR 조작 기능 구현 - 정경언</summary>
+
+## &nbsp;&nbsp;&nbsp;&nbsp;UI 및 변수 선언
+
+- VR 환경에서 UI 및 캐릭터 동작 처리를 위한 변수 선언.
+
+- 캐릭터 이동, 회전 속도 설정 및 마이크 음소거 상태 관리.
+
+```csharp
+
+// UI Function
+public GameObject mUIPanel;
+public GameObject mEmotionPanel;
+public Image MicImage;
+private Sprite mMicOff;
+private Sprite mMicOn;
+
+// Character Function
+public float mMoveSpeed = 3.0f;
+public float mRotationSpeed = 100.0f;
+
+private CharacterController mCharacterController;
+private bool bIsMuted = false;
+
+// Set Instance
+private static ICInputManager instance;
+
+public GameObject mOVRCam;
+public bool Ismine = false;
+public bool UseEmo = false;
+public ICEmoticon ICEmoticon;
+public ICSlider Slider;
+public ICMBTI MBTI;
+public ICResult Result;
+
+```
+
+## &nbsp;&nbsp;&nbsp;&nbsp;초기화
+
+- CharacterController 컴포넌트를 초기화하고 마이크 상태 아이콘 로드.
+    
+```csharp
+
+void Start()
+{
+    mCharacterController = GetComponent<CharacterController>();
+    mMicOff = Resources.Load<Sprite>("Micoff");
+    mMicOn = Resources.Load<Sprite>("MicOn");
+}
+
+```
+
+## &nbsp;&nbsp;&nbsp;&nbsp;VR 컨트롤러 입력 처리
+
+- VR 컨트롤러의 입력을 처리하여 감정 패널, UI 패널 활성화 및 마이크 상태를 제어.
+    
+```csharp
+
+void Update()
+{
+    if (!Ismine)
+        return;
+    MetaInputController();
+}
+
+private void MetaInputController()
+{
+    HandleLeftJoystickMovement();
+    HandleRightJoystickRotation();
+
+    // Right Controller
+    if (OVRInput.GetActiveController() == OVRInput.Controller.RTouch)
+    {
+        // A Button (Open Emotion Panel)
+        if (OVRInput.GetUp(OVRInput.Button.One, OVRInput.Controller.RTouch))
+        {
+            if (UseEmo == false) return;
+            mEmotionPanel.SetActive(!mEmotionPanel.activeSelf);
+        }
+
+        // B Button (Open 2D UI)
+        if (OVRInput.GetUp(OVRInput.Button.Two, OVRInput.Controller.RTouch))
+        {
+            mUIPanel.SetActive(!mUIPanel.activeSelf);
+        }
+    }
+
+    // Left Controller
+    if (OVRInput.GetActiveController() == OVRInput.Controller.LTouch)
+    {
+        // X Button - Mic Control
+        if (OVRInput.GetUp(OVRInput.Button.Three, OVRInput.Controller.LTouch))
+        {
+            bIsMuted = !bIsMuted;
+            MicImage.sprite = bIsMuted ? mMicOff : mMicOn;
+        }
+    }
+}
+
+```
+
+
+</details>
+
+<details>
 <summary> NetworkManager - 유승우 </summary>
 
  

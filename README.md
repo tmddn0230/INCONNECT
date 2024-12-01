@@ -1155,6 +1155,320 @@ private void MetaInputController()
 </details>
 
 <details>
+ <summary> 서버를 통한 기능 구현 - 정경언</summary>
+
+## &nbsp;&nbsp;&nbsp;&nbsp;캐릭터 스폰
+
+- 서버에서 전달받은 UID를 기반으로 캐릭터를 생성하고 활성화.
+
+```csharp
+
+public void Actor_Spawn(int uid, int Result)
+{
+    if (Result != 1 || uid < 1 || uid > mActors.Length) return;
+    if (m_UID == 0) m_UID = uid;
+    if (spawnedActors == null) spawnedActors = new GameObject[mActors.Length];
+
+    for (int i = 0; i < uid; i++)
+    {
+        if (spawnedActors[i] == null)
+        {
+            spawnedActors[i] = Instantiate(mActors[i], Vector3.zero, Quaternion.identity);
+        }
+    }
+
+    foreach (var actor in spawnedActors)
+    {
+        var inputManager = actor?.GetComponent<ICInputManager>();
+        if (inputManager != null) inputManager.Ismine = (actor == spawnedActors[m_UID - 1]);
+    }
+}
+
+
+```
+
+## &nbsp;&nbsp;&nbsp;&nbsp;감정표현 송/수신 
+
+- 서버를 통한 감정표현 송/수신
+
+```csharp
+
+public void SendEmoticon(int i)
+{
+    ICNetworkManager.Instance.SendPacket_EMO(i);
+}
+public void ReceiveEmotion(int i)
+{
+    DefalutEmoAnim(emoticons[i]);
+}
+
+```
+
+## &nbsp;&nbsp;&nbsp;&nbsp;감정표현 애니메이션
+
+- 감정 표현 애니메이션을 실행하여 화면에 표시
+
+```csharp
+
+IEnumerator MoveForward(Sprite emotion)
+{
+    transform.position = new Vector3(0f, 1.9f, 0f);
+    Texture2D newAlbedoTexture = emotion.texture;
+    mat.SetTexture("_MainTex", newAlbedoTexture);
+
+    float startTime = Time.time;
+
+    while (Time.time < startTime + 1f)
+    {
+        transform.Translate(Vector3.forward * Movespeed * Time.deltaTime);
+        yield return null;
+    }
+}
+
+```
+
+## &nbsp;&nbsp;&nbsp;&nbsp;상대방 점수 산정
+
+- 스크롤 바를 이용해 서버를 통해 상대방의 점수를 산정.
+
+```csharp
+
+ public void SetScore()
+ {
+     text.text = "점수" + (silder.value * 100).ToString("F0")+ "점";
+     string a = (silder.value * 100).ToString("F0");
+     score = int.Parse(a);
+ }
+
+ public void SendScore()
+ {
+     ICNetworkManager.Instance.SendPacket_Attract(score);
+ }
+
+ public void Receive_Score(int Score)
+ {
+     if(Score < 70)
+         Fail.SetActive(true);
+        
+     else
+         Success.SetActive(true);
+ }
+
+
+```
+
+## &nbsp;&nbsp;&nbsp;&nbsp;상대방과의 만남 선택
+
+- 서버를 통해 결과값 주고 받기 구현.
+
+```csharp
+
+  public void Send_Result(int i) //0 성공 1 실패
+  {
+      ICNetworkManager.Instance.SendPacket_After(i);
+  }
+
+  public void Receive_Result(int i)
+  {
+      if(i == 0)
+      {
+          Continue.SetActive(true);
+      }
+      else
+      {
+          No_Continue.SetActive(true);
+      }
+  }
+
+```
+
+</details>
+
+<details>
+ <summary> 모션 데이터 동기화 - 정경언</summary>
+
+## &nbsp;&nbsp;&nbsp;&nbsp;모션 데이터 구조체 정의
+
+- 모션 데이터 동기화를 위한 구조체 정의
+
+```csharp
+
+public struct CoreBoneData
+{
+    // Body
+    public float[] headPosition;
+    public float[] headRotation;
+    public float[] neckPosition;
+    public float[] neckRotation;
+    public float[] chestPosition;
+    public float[] chestRotation;
+    public float[] spinePosition;
+    public float[] spineRotation;
+    public float[] hipPosition;
+    public float[] hipRotation;
+
+    // Hands
+    public float[] leftUpperArmPosition;
+    public float[] leftUpperArmRotation;
+    public float[] leftLowerArmPosition;
+    public float[] leftLowerArmRotation;
+    public float[] leftHandPosition;
+    public float[] leftHandRotation;
+    public float[] rightUpperArmPosition;
+    public float[] rightUpperArmRotation;
+    public float[] rightLowerArmPosition;
+    public float[] rightLowerArmRotation;
+    public float[] rightHandPosition;
+    public float[] rightHandRotation;
+
+    // Legs
+    public float[] leftFootPosition;
+    public float[] leftFootRotation;
+    public float[] rightFootPosition;
+    public float[] rightFootRotation;
+
+    public void Init()
+    {
+        // Initialize all arrays
+        headPosition = new float[3];
+        headRotation = new float[4];
+        neckPosition = new float[3];
+        neckRotation = new float[4];
+        ...
+    }
+}
+
+```
+
+## &nbsp;&nbsp;&nbsp;&nbsp;본 데이터 수집
+
+- HumanBodyBones를 기반으로 Unity의 Animator에서 본 위치와 회전을 가져옴
+
+```csharp
+
+private float[] GetPositionArray(HumanBodyBones bone)
+{
+    Transform boneTransform = m_actor.GetBone(bone);
+    if (boneTransform == null) return new float[3];
+
+    Vector3 position = boneTransform.position;
+    return new float[] { position.x, position.y, position.z };
+}
+
+private float[] GetRotationArray(HumanBodyBones bone)
+{
+    Transform boneTransform = m_actor.GetBone(bone);
+    if (boneTransform == null) return new float[4];
+
+    Quaternion rotation = boneTransform.rotation;
+    return new float[] { rotation.x, rotation.y, rotation.z, rotation.w };
+}
+
+
+```
+
+## &nbsp;&nbsp;&nbsp;&nbsp;데이터 업데이트
+
+- 본 데이터를 Update에서 실시간으로 갱신
+
+```csharp
+
+void Update()
+{
+    if (m_actor == null) return;
+
+    // Body
+    m_coreBoneData.hipPosition = GetPositionArray(HumanBodyBones.Hips);
+    m_coreBoneData.hipRotation = GetRotationArray(HumanBodyBones.Hips);
+    m_coreBoneData.spinePosition = GetPositionArray(HumanBodyBones.Spine);
+    m_coreBoneData.spineRotation = GetRotationArray(HumanBodyBones.Spine);
+    m_coreBoneData.chestPosition = GetPositionArray(HumanBodyBones.Chest);
+    m_coreBoneData.chestRotation = GetRotationArray(HumanBodyBones.Chest);
+    m_coreBoneData.neckPosition = GetPositionArray(HumanBodyBones.Neck);
+    m_coreBoneData.neckRotation = GetRotationArray(HumanBodyBones.Neck);
+    m_coreBoneData.headPosition = GetPositionArray(HumanBodyBones.Head);
+    m_coreBoneData.headRotation = GetRotationArray(HumanBodyBones.Head);
+
+    // Hands
+    m_coreBoneData.leftUpperArmPosition = GetPositionArray(HumanBodyBones.LeftUpperArm);
+    m_coreBoneData.leftUpperArmRotation = GetRotationArray(HumanBodyBones.LeftUpperArm);
+    m_coreBoneData.leftLowerArmPosition = GetPositionArray(HumanBodyBones.LeftLowerArm);
+    ...
+}
+
+```
+
+## &nbsp;&nbsp;&nbsp;&nbsp;데이터 전송
+
+- ICPacket_Bone 패킷 구조체에 본 데이터를 설정하고 네트워크 매니저를 통해 서버로 전송.
+
+```csharp
+
+void Datasend()
+{
+    if (mNetworkManager != null)
+    {
+        ICPacket_Bone bonepacket = new ICPacket_Bone();
+        bonepacket.SetMotionProtocol();
+        bonepacket.UID = 0; // UID 설정
+        bonepacket.bonedata = m_coreBoneData; // 본 데이터 설정
+
+        mNetworkManager.SendPacket_Bone(bonepacket);
+    }
+}
+
+```
+
+## &nbsp;&nbsp;&nbsp;&nbsp;데이터 수신 및 업데이트
+
+- 수신 데이터를 CoreBoneData에 반영 및 캐릭터의 본 데이터 갱신
+
+```csharp
+
+void testupdate()
+{
+    if (mNetworkManager != null)
+    {
+        mNetworkManager.GetReciever().GetDictionValue(1, m_coreBoneData);
+        // UpdateCharacter 함수로 본 데이터 업데이트
+        CharacterAnim.Instance?.UpdateCharacter(m_coreBoneData);
+    }
+}
+
+```
+
+## &nbsp;&nbsp;&nbsp;&nbsp;캐릭터 애니메이션 업데이트
+
+- CoreBoneData를 통해 업데이트된 본 데이터를 Animator 본에 적용.
+  
+- 본의 위치(Position)와 회전(Rotation)을 실시간으로 반영하여 캐릭터 애니메이션을 동기화.
+
+```csharp
+
+public void UpdateCharacter(CoreBoneData coreBoneData)
+{
+    UpdateBone(HumanBodyBones.Hips, coreBoneData.hipPosition, coreBoneData.hipRotation);
+    UpdateBone(HumanBodyBones.Spine, coreBoneData.spinePosition, coreBoneData.spineRotation);
+    ...
+}
+
+private void UpdateBone(HumanBodyBones bone, float[] positionArray, float[] rotationArray)
+{
+    Transform boneTransform = m_animator.GetBoneTransform(bone);
+    if (boneTransform == null) return;
+
+    Vector3 position = new Vector3(positionArray[0], positionArray[1], positionArray[2]);
+    Quaternion rotation = new Quaternion(rotationArray[0], rotationArray[1], rotationArray[2], rotationArray[3]);
+
+    boneTransform.position = position;
+    boneTransform.rotation = rotation;
+}
+
+```
+
+</details>
+
+<details>
 <summary> NetworkManager - 유승우 </summary>
 
  
